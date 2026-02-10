@@ -1,26 +1,88 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f5f0eb;
+  --foreground: #1a1a1a;
+  /* Muted shifted slightly warmer to complement the clay */
+  --muted: #8c857d; 
+  --accent: #1a1a1a;
+  /* Our new Terracotta/Clay */
+  --accent-primary: #a35b42; 
+  --border: rgba(0, 0, 0, 0.08);
+  --crosshair: #999999;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-primary: var(--accent-primary);
+  --color-border: var(--border);
+  --color-crosshair: var(--crosshair);
+  --font-sans: var(--font-noto-jp), system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-jp: var(--font-noto-jp);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  cursor: default;
+}
+
+/* Updated selection to feel more organic */
+::selection {
+  background: rgba(163, 91, 66, 0.2);
+  color: var(--foreground);
+}
+
+/* Japanese vertical text - BRUTALIST STYLE */
+.writing-vertical {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  letter-spacing: 0.15em;
+  font-family: var(--font-jp);
+}
+
+/* Brutalist utility classes */
+.text-brutalist {
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 0.9;
+  font-family: var(--font-jp);
+}
+
+.text-architectural {
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Kanji display */
+.kanji-brutal {
+  font-family: var(--font-jp);
+  font-weight: 900;
+  line-height: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+/* main container div in SlideContainer */
+.slide-viewport {
+  overflow: hidden; /* Prevent parent from expanding */
+  perspective: 1000px; /* Optional: smooths out hardware acceleration */
+  contain: paint; /* Optimization: tells browser not to paint outside this box */
 }
