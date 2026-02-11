@@ -87,25 +87,25 @@ export function ArchGrid() {
       <div
         data-jp-text
         translate="no"
-        className="absolute left-4 md:left-8 top-[45%] writing-vertical text-2xl md:text-3xl font-bold text-foreground/15 kanji-brutal select-none"
+        className="absolute left-4 md:left-8 top-[45%] writing-vertical text-lg md:text-3xl font-bold text-foreground/8 md:text-foreground/15 kanji-brutal select-none"
       >
         アルゴリズム
       </div>
 
-      {/* LEFT SIDE - Bottom: Design/System */}
+      {/* LEFT SIDE - Bottom: Design/System — hidden on mobile */}
       <div
         data-jp-text
         translate="no"
-        className="absolute left-4 md:left-8 bottom-[12%] writing-vertical text-xl md:text-2xl font-bold text-foreground/20 kanji-brutal select-none"
+        className="hidden md:block absolute left-4 md:left-8 bottom-[12%] writing-vertical text-xl md:text-2xl font-bold text-foreground/20 kanji-brutal select-none"
       >
         設計思想
       </div>
 
-      {/* RIGHT SIDE - Engineering/Build related */}
+      {/* RIGHT SIDE - Engineering/Build related — hidden on mobile */}
       <div
         data-jp-text
         translate="no"
-        className="absolute right-4 md:right-8 top-[15%] writing-vertical text-4xl md:text-6xl font-black text-foreground/8 kanji-brutal select-none"
+        className="hidden md:block absolute right-4 md:right-8 top-[15%] writing-vertical text-4xl md:text-6xl font-black text-foreground/8 kanji-brutal select-none"
       >
         工学建築
       </div>
@@ -114,7 +114,7 @@ export function ArchGrid() {
       <div
         data-jp-text
         translate="no"
-        className="absolute right-4 md:right-8 bottom-[15%] writing-vertical text-lg md:text-xl font-bold text-foreground/25 kanji-brutal select-none tracking-widest"
+        className="absolute right-4 md:right-8 bottom-[15%] writing-vertical text-sm md:text-xl font-bold text-foreground/10 md:text-foreground/25 kanji-brutal select-none tracking-widest"
       >
         デジタル創世記
       </div>

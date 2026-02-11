@@ -82,7 +82,7 @@ body {
 
 /* main container div in SlideContainer */
 .slide-viewport {
-  overflow: hidden; /* Prevent parent from expanding */
-  perspective: 1000px; /* Optional: smooths out hardware acceleration */
-  contain: paint; /* Optimization: tells browser not to paint outside this box */
+  overflow: hidden;
+  perspective: 1000px;
+  contain: paint;
 }

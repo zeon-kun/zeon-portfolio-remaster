@@ -6,7 +6,6 @@ import { prefersReducedMotion } from "@/lib/motion";
 import { PROJECTS } from "@/lib/content";
 import type { Project } from "@/lib/content";
 import { ProjectModal } from "./ProjectModal";
-import { CatBlueprint } from "../geometric/CatBlueprint";
 import { BlueprintElements } from "../geometric/GlobeBlueprint";
 
 export function ProjectsSlide({ isActive }: { isActive: boolean }) {
@@ -35,7 +34,7 @@ export function ProjectsSlide({ isActive }: { isActive: boolean }) {
     <>
       <section
         ref={containerRef}
-        className="relative h-full flex flex-col justify-center px-8 md:px-16 lg:px-24 pt-24 pb-16 overflow-y-auto"
+        className="relative min-h-full flex flex-col justify-start md:justify-center px-8 md:px-16 lg:px-24 pt-24 pb-24 md:pb-16"
       >
         <div className="max-w-4xl w-full">
           {/* Section title */}

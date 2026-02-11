@@ -4,7 +4,6 @@ import { useRef, useEffect } from "react";
 import gsap from "gsap";
 import { prefersReducedMotion } from "@/lib/motion";
 import { PERSONAL_INFO, SKILLS, CERTIFICATIONS } from "@/lib/content";
-import { CodeBlueprint } from "../geometric/CodeBlueprint";
 import { BlueprintElements } from "../geometric/GlobeBlueprint";
 
 export function AboutSlide({ isActive }: { isActive: boolean }) {
