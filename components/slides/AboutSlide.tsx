@@ -36,6 +36,7 @@ export function AboutSlide({ isActive }: { isActive: boolean }) {
         <div className="max-w-4xl w-full mx-auto">
           {/* Section title */}
           <div data-about-block className="mb-16">
+            <p className="text-xs font-mono text-muted uppercase tracking-[0.3em] mt-2">About Me</p>
             <h2
               tabIndex={-1}
               translate="no"
@@ -43,7 +44,6 @@ export function AboutSlide({ isActive }: { isActive: boolean }) {
             >
               私について
             </h2>
-            <p className="text-xs font-mono text-muted uppercase tracking-[0.3em] mt-2">About Me</p>
           </div>
 
           {/* Intro */}
