@@ -3,7 +3,7 @@
 
 export const audioState = {
   analyser: null as AnalyserNode | null,
-  dataArray: null as Uint8Array | null,
+  dataArray: null as Uint8Array<ArrayBuffer> | null,
   isPlaying: false,
 };
 

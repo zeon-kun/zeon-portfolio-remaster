@@ -12,8 +12,6 @@ export function AudioPlayer() {
   const [volume, setVolume] = useState(0.5);
   const [muted, setMuted] = useState(false);
   const [offline, setOffline] = useState(false);
-  const [initialized, setInitialized] = useState(false);
-
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const ctxRef = useRef<AudioContext | null>(null);
   const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
@@ -58,7 +56,6 @@ export function AudioPlayer() {
     sourceRef.current = source;
     audioState.analyser = analyser;
     audioState.dataArray = new Uint8Array(analyser.frequencyBinCount);
-    setInitialized(true);
   }, []);
 
   const togglePlay = useCallback(async () => {
@@ -162,11 +159,11 @@ export function AudioPlayer() {
         {offline ? "OFFLINE" : TRACK_LABEL}
       </span>
 
-      {/* Volume */}
+      {/* Volume — hidden on mobile to save space */}
       <button
         onClick={toggleMute}
         aria-label={muted ? "Unmute" : "Mute"}
-        className="flex items-center justify-center w-5 h-5
+        className="hidden md:flex items-center justify-center w-5 h-5
           focus-visible:outline-2 focus-visible:outline-accent-primary focus-visible:outline-offset-2"
       >
         {muted || volume === 0 ? (
@@ -184,7 +181,7 @@ export function AudioPlayer() {
         value={muted ? 0 : volume}
         onChange={handleVolume}
         aria-label="Volume"
-        className="w-14 h-[2px] appearance-none bg-foreground/15 cursor-pointer
+        className="hidden md:block w-14 h-[2px] appearance-none bg-foreground/15 cursor-pointer
           [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:h-2
           [&::-webkit-slider-thumb]:bg-accent-primary [&::-webkit-slider-thumb]:border-0
           [&::-moz-range-thumb]:w-2 [&::-moz-range-thumb]:h-2
