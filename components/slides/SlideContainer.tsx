@@ -13,6 +13,7 @@ import { ExperienceSlide } from "./ExperienceSlide";
 import { ProjectsSlide } from "./ProjectsSlide";
 import { BlueprintElements } from "../geometric/GlobeBlueprint";
 import { GestureHint } from "./GestureHint";
+import { AudioPlayer } from "../audio/AudioPlayer";
 
 gsap.registerPlugin(useGSAP);
 
@@ -329,6 +330,7 @@ export function SlideContainer() {
       <MouseTracker />
       <BlueprintElements />
       <Navbar activeSlide={SLIDES[activeIndex]} onNavigate={handleNavigate} />
+      <AudioPlayer />
       <GestureHint />
 
       <div ref={liveRegionRef} role="status" aria-live="polite" aria-atomic="true" className="sr-only" />
