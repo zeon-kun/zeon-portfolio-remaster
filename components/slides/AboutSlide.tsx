@@ -31,7 +31,7 @@ export function AboutSlide({ isActive }: { isActive: boolean }) {
     <>
       <section
         ref={containerRef}
-        className="min-h-full flex flex-col justify-center px-8 md:px-16 lg:px-24 pt-32 pb-24"
+        className="min-h-full flex flex-col justify-start md:justify-center px-8 md:px-16 lg:px-24 pt-24 pb-24"
       >
         <div className="max-w-4xl w-full mx-auto">
           {/* Section title */}
