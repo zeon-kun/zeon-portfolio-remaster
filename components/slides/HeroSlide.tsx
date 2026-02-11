@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { prefersReducedMotion } from "@/lib/motion";
@@ -17,8 +17,62 @@ const EXPERIENCE = [
 
 const COMPANIES = ["Huawei", "Indosat", "Nokia", "Deloitte", "Google"];
 
+const TYPEWRITER_PHRASES = [
+  "Full Stack Developer",
+  "Cloud Engineer (GCP)",
+  "Backend Developer",
+  "Based in Indonesia",
+  "ITS Informatics '25",
+];
+
+function useTypewriter(phrases: string[], typeSpeed = 60, deleteSpeed = 30, pauseMs = 2000) {
+  const [text, setText] = useState("");
+  const [phraseIdx, setPhraseIdx] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const tick = useCallback(() => {
+    const current = phrases[phraseIdx];
+
+    if (!isDeleting) {
+      // Typing
+      const next = current.slice(0, text.length + 1);
+      setText(next);
+
+      if (next === current) {
+        // Done typing — pause then start deleting
+        timeoutRef.current = setTimeout(() => setIsDeleting(true), pauseMs);
+        return;
+      }
+      timeoutRef.current = setTimeout(tick, typeSpeed);
+    } else {
+      // Deleting
+      const next = current.slice(0, text.length - 1);
+      setText(next);
+
+      if (next === "") {
+        setIsDeleting(false);
+        setPhraseIdx((prev) => (prev + 1) % phrases.length);
+        timeoutRef.current = setTimeout(tick, typeSpeed);
+        return;
+      }
+      timeoutRef.current = setTimeout(tick, deleteSpeed);
+    }
+  }, [text, phraseIdx, isDeleting, phrases, typeSpeed, deleteSpeed, pauseMs]);
+
+  useEffect(() => {
+    timeoutRef.current = setTimeout(tick, typeSpeed);
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, [tick, typeSpeed]);
+
+  return text;
+}
+
 export function HeroSlide({ isActive }: { isActive: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const typewriterText = useTypewriter(TYPEWRITER_PHRASES);
 
   useGSAP(
     () => {
@@ -103,7 +157,7 @@ export function HeroSlide({ isActive }: { isActive: boolean }) {
     <>
       <section
         ref={containerRef}
-        className="relative h-full flex flex-col justify-center px-8 md:px-16 lg:px-24 pt-24 pb-16 overflow-hidden"
+        className="relative h-full flex flex-col justify-center px-8 md:px-16 lg:px-24 pt-48 md:pt-24 pb-16 overflow-hidden"
       >
         <div className="flex-1 flex flex-col justify-center max-w-4xl">
           <div className="space-y-2">
@@ -134,8 +188,10 @@ export function HeroSlide({ isActive }: { isActive: boolean }) {
 
           <div className="mt-12 flex flex-col md:flex-row md:items-start md:justify-between gap-8 max-w-3xl pl-2">
             <div data-hero-meta className="space-y-2">
-              <p className="text-lg font-bold tracking-tight">Software Engineer</p>
-              <p className="text-sm text-muted font-medium tracking-wide">Based Indonesia</p>
+              <p className="text-sm font-mono text-foreground/70 tracking-wide h-6">
+                {typewriterText}
+                <span className="inline-block w-[2px] h-[1em] bg-accent-primary ml-0.5 align-middle animate-[blink_1s_step-end_infinite]" />
+              </p>
             </div>
 
             <div data-hero-meta className="space-y-4">
