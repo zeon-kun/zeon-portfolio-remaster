@@ -7,7 +7,7 @@ import { audioState } from "@/lib/audio";
 const STREAM_URL = "https://streams.ilovemusic.de/iloveradio17.mp3";
 const TRACK_LABEL = "LOFI STREAM";
 
-export function AudioPlayer() {
+export function AudioPlayer({ loaderVisible }: { loaderVisible?: boolean }) {
   const [playing, setPlaying] = useState(false);
   const [volume, setVolume] = useState(0.5);
   const [muted, setMuted] = useState(false);
@@ -131,9 +131,9 @@ export function AudioPlayer() {
 
   return (
     <div
-      className="fixed bottom-20 right-4 md:bottom-8 md:right-8 z-2 flex items-center gap-3
+      className={`fixed bottom-20 right-4 md:bottom-8 md:right-8 z-2 flex items-center gap-3
         border border-foreground/10 bg-background/90 backdrop-blur-sm px-3 py-2
-        select-none"
+        select-none transition-all duration-700 ease-out ${loaderVisible ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"}`}
       role="region"
       aria-label="Audio player"
       onKeyDown={handleKeyDown}

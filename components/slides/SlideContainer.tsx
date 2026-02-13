@@ -14,6 +14,7 @@ import { ProjectsSlide } from "./ProjectsSlide";
 import { BlueprintElements } from "../geometric/GlobeBlueprint";
 import { GestureHint } from "./GestureHint";
 import { AudioPlayer } from "../audio/AudioPlayer";
+import { useGlobePhase } from "@/lib/globe-state";
 
 gsap.registerPlugin(useGSAP);
 
@@ -21,6 +22,8 @@ const SLIDES = ["hero", "about", "experience", "projects"] as const;
 export type SlideId = (typeof SLIDES)[number];
 
 export function SlideContainer() {
+  const globePhase = useGlobePhase();
+  const isLoaderVisible = globePhase !== "ready";
   const [activeIndex, setActiveIndex] = useState(0);
 
   const isTransitioning = useRef(false);
@@ -329,8 +332,8 @@ export function SlideContainer() {
       <ArchGrid />
       <MouseTracker />
       <BlueprintElements />
-      <Navbar activeSlide={SLIDES[activeIndex]} onNavigate={handleNavigate} />
-      <AudioPlayer />
+      <Navbar activeSlide={SLIDES[activeIndex]} onNavigate={handleNavigate} loaderVisible={isLoaderVisible} />
+      <AudioPlayer loaderVisible={isLoaderVisible} />
       <GestureHint />
 
       <div ref={liveRegionRef} role="status" aria-live="polite" aria-atomic="true" className="sr-only" />

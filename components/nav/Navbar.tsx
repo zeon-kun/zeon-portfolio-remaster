@@ -12,16 +12,22 @@ const NAV_LINKS = [
 ] as const;
 
 const SOCIAL_LINKS = [
-  { label: "リンクトイン", href: "https://linkedin.com/in/muhammad-rafif-tri-risqullah-65311421a", icon: Linkedin, translation: "LinkedIn" },
+  {
+    label: "リンクトイン",
+    href: "https://linkedin.com/in/muhammad-rafif-tri-risqullah-65311421a",
+    icon: Linkedin,
+    translation: "LinkedIn",
+  },
   { label: "ギットハブ", href: "https://github.com/zeon-kun", icon: Github, translation: "GitHub" },
 ] as const;
 
 interface NavbarProps {
   activeSlide: SlideId;
   onNavigate: (id: SlideId) => void;
+  loaderVisible?: boolean;
 }
 
-export function Navbar({ activeSlide, onNavigate }: NavbarProps) {
+export function Navbar({ activeSlide, onNavigate, loaderVisible }: NavbarProps) {
   const [hoveredNav, setHoveredNav] = useState<string | null>(null);
   const [hoveredSocial, setHoveredSocial] = useState<string | null>(null);
   const [hoveredCta, setHoveredCta] = useState(false);
@@ -29,7 +35,7 @@ export function Navbar({ activeSlide, onNavigate }: NavbarProps) {
   return (
     <>
       {/* ─── Desktop top bar ─── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 px-8 py-5 hidden md:block">
+      <nav className={`fixed top-0 left-0 right-0 z-50 px-8 py-5 hidden md:block transition-all duration-700 ease-out ${loaderVisible ? "opacity-0 blur-sm" : "opacity-100 blur-0"}`}>
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           {/* Logo */}
           <button
@@ -79,7 +85,7 @@ export function Navbar({ activeSlide, onNavigate }: NavbarProps) {
                         whitespace-nowrap
                         transition-all duration-200
                         pointer-events-none z-50
-                        ${isHovered && !isActive ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-1"}
+                        ${isHovered ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-1"}
                       `}
                     >
                       {link.translation}
@@ -161,7 +167,7 @@ export function Navbar({ activeSlide, onNavigate }: NavbarProps) {
       </nav>
 
       {/* ─── Mobile top bar (logo + CTA only) ─── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4 flex md:hidden items-center justify-between">
+      <nav className={`fixed top-0 left-0 right-0 z-50 px-6 py-4 flex md:hidden items-center justify-between transition-all duration-700 ease-out ${loaderVisible ? "opacity-0 blur-sm" : "opacity-100 blur-0"}`}>
         <button
           onClick={() => onNavigate("hero")}
           translate="no"
@@ -180,7 +186,7 @@ export function Navbar({ activeSlide, onNavigate }: NavbarProps) {
 
       {/* ─── Mobile bottom bar (icon navigation) ─── */}
       <nav
-        className="fixed bottom-0 left-0 right-0 z-50 md:hidden border-t border-foreground/8 bg-background/90 backdrop-blur-sm"
+        className={`fixed bottom-0 left-0 right-0 z-50 md:hidden border-t border-foreground/8 bg-background/90 backdrop-blur-sm transition-all duration-700 ease-out ${loaderVisible ? "opacity-0 blur-sm" : "opacity-100 blur-0"}`}
         aria-label="Section navigation"
       >
         <div className="flex items-center justify-around px-4 py-2">
@@ -201,9 +207,7 @@ export function Navbar({ activeSlide, onNavigate }: NavbarProps) {
                 `}
               >
                 <Icon size={18} strokeWidth={isActive ? 2.5 : 1.5} />
-                <span className="text-[8px] font-mono uppercase tracking-wider">
-                  {link.translation}
-                </span>
+                <span className="text-[8px] font-mono uppercase tracking-wider">{link.translation}</span>
               </button>
             );
           })}
@@ -221,9 +225,7 @@ export function Navbar({ activeSlide, onNavigate }: NavbarProps) {
                 className="flex flex-col items-center gap-1 px-3 py-1.5 text-muted transition-colors duration-150"
               >
                 <Icon size={18} strokeWidth={1.5} />
-                <span className="text-[8px] font-mono uppercase tracking-wider">
-                  {link.translation}
-                </span>
+                <span className="text-[8px] font-mono uppercase tracking-wider">{link.translation}</span>
               </a>
             );
           })}
