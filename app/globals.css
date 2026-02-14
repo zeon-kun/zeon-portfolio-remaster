@@ -4,7 +4,7 @@
   --background: #f5f0eb;
   --foreground: #1a1a1a;
   /* Muted shifted slightly warmer to complement the clay */
-  --muted: #8c857d; 
+  --muted: #6e6860;
   --accent: #1a1a1a;
   /* Our new Terracotta/Clay */
   --accent-primary: #a35b42; 
@@ -92,3 +92,4 @@ body {
   perspective: 1000px;
   contain: paint;
 }
+/* z-index layers: canvas z-5, #main z-10, planet overlay z-15, navbar z-50, modal z-100 */

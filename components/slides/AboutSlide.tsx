@@ -4,7 +4,7 @@ import { useRef, useEffect } from "react";
 import gsap from "gsap";
 import { prefersReducedMotion } from "@/lib/motion";
 import { PERSONAL_INFO, SKILLS, CERTIFICATIONS } from "@/lib/content";
-import { BlueprintElements } from "../geometric/GlobeBlueprint";
+
 
 export function AboutSlide({ isActive }: { isActive: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -54,7 +54,7 @@ export function AboutSlide({ isActive }: { isActive: boolean }) {
           {/* Education */}
           <div data-about-block className="mb-16 border-l-2 pl-6">
             <p className="text-[10px] font-mono text-muted uppercase tracking-[0.2em] mb-4">Education</p>
-            <p className="text-lg font-bold">{PERSONAL_INFO.education.institution}</p>
+            <h3 className="text-lg font-bold">{PERSONAL_INFO.education.institution}</h3>
             <p className="text-sm text-foreground/70 mt-1">{PERSONAL_INFO.education.degree}</p>
             <div className="flex items-baseline gap-4 mt-2">
               <span className="text-sm font-mono text-accent-primary">{PERSONAL_INFO.education.gpa}</span>
@@ -62,7 +62,7 @@ export function AboutSlide({ isActive }: { isActive: boolean }) {
             </div>
             <ul className="mt-4 space-y-2">
               {PERSONAL_INFO.education.highlights.map((h, i) => (
-                <li key={i} className="text-xs text-foreground/50 leading-relaxed">
+                <li key={i} className="text-xs text-foreground/60 leading-relaxed">
                   {h}
                 </li>
               ))}
@@ -75,7 +75,7 @@ export function AboutSlide({ isActive }: { isActive: boolean }) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {SKILLS.map((category) => (
                 <div key={category.label}>
-                  <p className="text-xs font-mono font-bold uppercase tracking-widest text-foreground/40 mb-3">
+                  <p className="text-xs font-mono font-bold uppercase tracking-widest text-foreground/50 mb-3">
                     {category.label}
                   </p>
                   <div className="flex flex-wrap gap-2">

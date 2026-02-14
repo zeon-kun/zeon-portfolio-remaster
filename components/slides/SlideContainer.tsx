@@ -14,7 +14,7 @@ import { ProjectsSlide } from "./ProjectsSlide";
 import { BlueprintElements } from "../geometric/GlobeBlueprint";
 import { GestureHint } from "./GestureHint";
 import { AudioPlayer } from "../audio/AudioPlayer";
-import { useGlobePhase } from "@/lib/globe-state";
+import { useGlobePhase, globeState } from "@/lib/globe-state";
 
 gsap.registerPlugin(useGSAP);
 
@@ -36,24 +36,10 @@ export function SlideContainer() {
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
   const liveRegionRef = useRef<HTMLDivElement>(null);
 
-  // Read hash on mount
+  // Always start at hero on page load — clear any stale hash
   useEffect(() => {
-    const hash = window.location.hash.replace("#", "") as SlideId;
-    const idx = SLIDES.indexOf(hash);
-    if (idx > 0) {
-      setActiveIndex(idx);
-      slideRefs.current.forEach((el, i) => {
-        if (!el) return;
-        if (i === idx) {
-          gsap.set(el, { x: "0%", opacity: 1, visibility: "visible" });
-        } else {
-          gsap.set(el, {
-            x: i < idx ? "-100%" : "100%",
-            opacity: 0,
-            visibility: "hidden",
-          });
-        }
-      });
+    if (window.location.hash) {
+      window.history.replaceState(null, "", window.location.pathname);
     }
   }, []);
 
@@ -86,6 +72,7 @@ export function SlideContainer() {
 
       setActiveIndex(nextIndex);
       isTransitioning.current = true;
+      globeState.setActiveSlide(SLIDES[nextIndex]);
 
       const direction = nextIndex > activeIndex ? 1 : -1;
       const currentEl = slideRefs.current[activeIndex];
@@ -294,26 +281,15 @@ export function SlideContainer() {
     };
   }, [activeIndex, navigateTo]);
 
-  // Set initial slide positions on mount
+  // Set initial slide positions on mount — always hero (index 0)
   useGSAP(
     () => {
-      const hash = window.location.hash.replace("#", "") as SlideId;
-      const initialIdx = SLIDES.indexOf(hash) >= 0 ? SLIDES.indexOf(hash) : 0;
-
-      if (initialIdx !== activeIndex) {
-        setActiveIndex(initialIdx);
-      }
-
       slideRefs.current.forEach((el, i) => {
         if (!el) return;
-        if (i === initialIdx) {
+        if (i === 0) {
           gsap.set(el, { x: "0%", opacity: 1, visibility: "visible" });
         } else {
-          gsap.set(el, {
-            x: i < initialIdx ? "-100%" : "100%",
-            opacity: 0,
-            visibility: "hidden",
-          });
+          gsap.set(el, { x: "100%", opacity: 0, visibility: "hidden" });
         }
       });
     },
@@ -338,7 +314,7 @@ export function SlideContainer() {
 
       <div ref={liveRegionRef} role="status" aria-live="polite" aria-atomic="true" className="sr-only" />
 
-      <div ref={containerRef} id="main" className="relative w-full h-screen contain-paint overflow-hidden">
+      <div ref={containerRef} id="main" className={`relative z-10 w-full h-screen contain-paint overflow-hidden transition-opacity duration-500 ${isLoaderVisible ? "opacity-0" : "opacity-100"}`}>
         <div
           ref={setSlideRef(0)}
           role="region"

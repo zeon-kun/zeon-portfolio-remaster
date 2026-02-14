@@ -4,7 +4,6 @@ import { useRef, useEffect, useState, useCallback } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { prefersReducedMotion } from "@/lib/motion";
-import { BlueprintElements } from "@/components/geometric/GlobeBlueprint";
 import { Cat, Code2, Coffee } from "lucide-react";
 
 gsap.registerPlugin(useGSAP);
@@ -86,6 +85,8 @@ export function HeroSlide({ isActive }: { isActive: boolean }) {
         return;
       }
 
+      const isDesktop = window.innerWidth >= 768;
+
       const tl = gsap.timeline({
         defaults: { ease: "power3.out", duration: 0.8 },
       });
@@ -130,8 +131,7 @@ export function HeroSlide({ isActive }: { isActive: boolean }) {
       tl.from(
         "[data-divider]",
         {
-          scaleX: 0,
-          transformOrigin: "left",
+          ...(isDesktop ? { scaleY: 0, transformOrigin: "top" } : { scaleX: 0, transformOrigin: "left" }),
           duration: 1,
           ease: "power2.inOut",
         },
@@ -159,41 +159,75 @@ export function HeroSlide({ isActive }: { isActive: boolean }) {
         ref={containerRef}
         className="relative h-full flex flex-col justify-center px-8 md:px-16 lg:px-24 pt-48 md:pt-24 pb-16 overflow-hidden"
       >
-        <div className="flex-1 flex flex-col justify-center max-w-4xl">
-          <div className="space-y-2">
-            <div className="overflow-hidden">
-              <h1
-                data-hero-kanji
-                translate="no"
-                tabIndex={-1}
-                className="text-[clamp(5rem,20vw,16rem)] font-black leading-[0.85] kanji-brutal text-foreground outline-none"
-              >
-                路四
-              </h1>
+        {/* ─── Two-column split on md+ ─── */}
+        <div className="flex-1 flex flex-col md:flex-row md:items-center gap-8 md:gap-0">
+          {/* ─── BRAND (left, 45%) ─── */}
+          <div className="md:w-[45%] flex flex-col justify-center">
+            <div className="space-y-2">
+              <div className="overflow-hidden">
+                <h1
+                  data-hero-kanji
+                  translate="no"
+                  tabIndex={-1}
+                  className="text-[clamp(5rem,20vw,16rem)] font-black leading-[0.85] kanji-brutal text-foreground outline-none"
+                >
+                  路四
+                </h1>
+              </div>
+
+              <div className="overflow-hidden pl-2">
+                <h2
+                  data-hero-name
+                  className="text-[clamp(1.5rem,4vw,3rem)] font-black tracking-[0.3em] text-foreground/60 uppercase"
+                >
+                  {"Jeong".split("").map((char, i) => (
+                    <span key={i} className="inline-block overflow-hidden">
+                      <span className="inline-block">{char}</span>
+                    </span>
+                  ))}
+                </h2>
+              </div>
             </div>
 
-            <div className="overflow-hidden pl-2">
-              <h1
-                data-hero-name
-                className="text-[clamp(1.5rem,4vw,3rem)] font-bold tracking-[0.3em] text-foreground/60 uppercase"
-              >
-                {"Jeong".split("").map((char, i) => (
-                  <span key={i} className="inline-block overflow-hidden">
-                    <span className="inline-block">{char}</span>
-                  </span>
-                ))}
-              </h1>
+            {/* Code • Coffee • Cats tagline */}
+            <div data-hero-meta className="mt-8 pl-2">
+              <div className="flex items-center gap-4 text-[10px] font-mono text-muted uppercase tracking-[0.2em] whitespace-nowrap">
+                <div className="flex items-center gap-1.5 group">
+                  <Code2 size={12} className="text-accent-primary transition-colors group-hover:text-foreground" />
+                  <span>Code</span>
+                </div>
+
+                <span className="opacity-30">&bull;</span>
+
+                <div className="flex items-center gap-1.5 group">
+                  <Coffee size={12} className="text-accent-primary transition-colors group-hover:text-foreground" />
+                  <span>Coffee</span>
+                </div>
+
+                <span className="opacity-30">&bull;</span>
+
+                <div className="flex items-center gap-1.5 group">
+                  <Cat size={12} className="text-accent-primary transition-colors group-hover:text-foreground" />
+                  <span>Cats</span>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="mt-12 flex flex-col md:flex-row md:items-start md:justify-between gap-8 max-w-3xl pl-2">
-            <div data-hero-meta className="space-y-2">
+          {/* ─── Vertical divider (desktop) / horizontal (mobile) ─── */}
+          <div data-divider className="w-full h-px md:w-px md:h-64 bg-foreground/10 md:mx-8 shrink-0" />
+
+          {/* ─── DETAIL (right, 55%) ─── */}
+          <div className="md:w-[55%] flex flex-col justify-center space-y-8 pl-2 md:pl-0">
+            {/* Typewriter */}
+            <div data-hero-meta>
               <p className="text-sm font-mono text-foreground/70 tracking-wide h-6">
                 {typewriterText}
                 <span className="inline-block w-[2px] h-[1em] bg-accent-primary ml-0.5 align-middle animate-[blink_1s_step-end_infinite]" />
               </p>
             </div>
 
+            {/* Experience list */}
             <div data-hero-meta className="space-y-4">
               <p className="text-[10px] font-mono text-muted uppercase tracking-[0.2em] border-b border-foreground/10 pb-2">
                 Experience
@@ -201,53 +235,30 @@ export function HeroSlide({ isActive }: { isActive: boolean }) {
               {EXPERIENCE.map((exp) => (
                 <div key={exp.company} className="flex items-baseline gap-4 group cursor-pointer">
                   <span className="text-sm font-bold group-hover:text-accent-primary transition-colors duration-300">
-                    → {exp.company}
+                    &rarr; {exp.company}
                   </span>
                   <span className="text-xs text-muted font-mono tracking-wider">{exp.location}</span>
                 </div>
               ))}
             </div>
-          </div>
-        </div>
 
-        <div data-divider className="w-full max-w-4xl h-px bg-foreground/10 mt-16 mb-10 ml-2" />
-
-        <div className="flex flex-col md:flex-row md:items-center gap-6 max-w-4xl pl-2">
-          <div data-hero-meta className="text-xs font-mono text-muted uppercase tracking-widest whitespace-nowrap">
-            <div
-              data-hero-meta
-              className="flex items-center gap-4 text-[10px] font-mono text-muted uppercase tracking-[0.2em] whitespace-nowrap"
-            >
-              <div className="flex items-center gap-1.5 group">
-                <Code2 size={12} className="text-accent-primary transition-colors group-hover:text-foreground" />
-                <span>Code</span>
-              </div>
-
-              <span className="opacity-30">•</span>
-
-              <div className="flex items-center gap-1.5 group">
-                <Coffee size={12} className="text-accent-primary transition-colors group-hover:text-foreground" />
-                <span>Coffee</span>
-              </div>
-
-              <span className="opacity-30">•</span>
-
-              <div className="flex items-center gap-1.5 group">
-                <Cat size={12} className="text-accent-primary transition-colors group-hover:text-foreground" />
-                <span>Cats</span>
+            {/* Worked With */}
+            <div data-hero-meta>
+              <p className="text-[10px] font-mono text-muted uppercase tracking-[0.2em] border-b border-foreground/10 pb-2 mb-4">
+                Worked With
+              </p>
+              <div className="flex flex-wrap items-center gap-8">
+                {COMPANIES.map((company) => (
+                  <span
+                    key={company}
+                    data-company
+                    className="text-sm font-bold text-foreground/50 transition-all duration-300 hover:text-foreground hover:tracking-wider cursor-pointer"
+                  >
+                    {company}
+                  </span>
+                ))}
               </div>
             </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-8">
-            {COMPANIES.map((company) => (
-              <span
-                key={company}
-                data-company
-                className="text-sm font-bold text-foreground/40 transition-all duration-300 hover:text-foreground hover:tracking-wider cursor-pointer"
-              >
-                {company}
-              </span>
-            ))}
           </div>
         </div>
       </section>

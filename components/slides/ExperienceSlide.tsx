@@ -1,20 +1,21 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useCallback } from "react";
 import gsap from "gsap";
 import { prefersReducedMotion } from "@/lib/motion";
 import { WORK_EXPERIENCE, ORGANIZATIONS } from "@/lib/content";
-import { BlueprintElements } from "../geometric/GlobeBlueprint";
+
 
 export function ExperienceSlide({ isActive }: { isActive: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const hasAnimated = useRef(false);
+  const reduced = prefersReducedMotion();
 
   useEffect(() => {
     if (!isActive || hasAnimated.current || !containerRef.current) return;
     hasAnimated.current = true;
 
-    if (prefersReducedMotion()) return;
+    if (reduced) return;
 
     const entries = containerRef.current.querySelectorAll("[data-exp-entry]");
     gsap.from(entries, {
@@ -25,7 +26,73 @@ export function ExperienceSlide({ isActive }: { isActive: boolean }) {
       ease: "power3.out",
       delay: 0.3,
     });
-  }, [isActive]);
+  }, [isActive, reduced]);
+
+  const handleMouseEnter = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (reduced) return;
+      const highlights = e.currentTarget.querySelector("[data-highlights]") as HTMLElement | null;
+      if (!highlights) return;
+      gsap.killTweensOf(highlights);
+      gsap.to(highlights, {
+        height: "auto",
+        opacity: 1,
+        duration: 0.35,
+        ease: "power2.out",
+      });
+    },
+    [reduced],
+  );
+
+  const handleMouseLeave = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (reduced) return;
+      const highlights = e.currentTarget.querySelector("[data-highlights]") as HTMLElement | null;
+      if (!highlights) return;
+      gsap.killTweensOf(highlights);
+      gsap.to(highlights, {
+        height: 0,
+        opacity: 0,
+        duration: 0.25,
+        ease: "power2.in",
+      });
+    },
+    [reduced],
+  );
+
+  const handleFocus = useCallback(
+    (e: React.FocusEvent<HTMLDivElement>) => {
+      if (reduced) return;
+      const highlights = e.currentTarget.querySelector("[data-highlights]") as HTMLElement | null;
+      if (!highlights) return;
+      gsap.killTweensOf(highlights);
+      gsap.to(highlights, {
+        height: "auto",
+        opacity: 1,
+        duration: 0.35,
+        ease: "power2.out",
+      });
+    },
+    [reduced],
+  );
+
+  const handleBlur = useCallback(
+    (e: React.FocusEvent<HTMLDivElement>) => {
+      if (reduced) return;
+      // Don't collapse if focus moved within the same entry
+      if (e.currentTarget.contains(e.relatedTarget as Node)) return;
+      const highlights = e.currentTarget.querySelector("[data-highlights]") as HTMLElement | null;
+      if (!highlights) return;
+      gsap.killTweensOf(highlights);
+      gsap.to(highlights, {
+        height: 0,
+        opacity: 0,
+        duration: 0.25,
+        ease: "power2.in",
+      });
+    },
+    [reduced],
+  );
 
   return (
     <>
@@ -49,20 +116,34 @@ export function ExperienceSlide({ isActive }: { isActive: boolean }) {
           {/* Work entries */}
           <div className="space-y-12 mb-16">
             {WORK_EXPERIENCE.map((entry) => (
-              <div key={entry.company} data-exp-entry className="border-l-2 pl-6 relative">
-                {/* Timeline dot */}
-                {/* <span className="absolute -left-[5px] top-1 w-2 h-2 bg-accent-primary" /> */}
-
+              <div
+                key={entry.company}
+                data-exp-entry
+                tabIndex={0}
+                className="border-l-2 pl-6 relative cursor-pointer group"
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+              >
                 <p className="text-xs font-mono text-muted tracking-wider">{entry.period}</p>
-                <p className="text-lg font-bold mt-1">{entry.company}</p>
+                <h3 className="text-lg font-bold mt-1 group-hover:text-accent-primary transition-colors duration-200">
+                  {entry.company}
+                </h3>
                 <p className="text-sm text-foreground/60 mt-0.5">
                   {entry.role} — {entry.location}
                 </p>
-                <p className="text-xs text-foreground/40 mt-2 italic">{entry.description}</p>
-                <ul className="mt-3 space-y-2">
+                <p className="text-xs text-foreground/50 mt-2 italic">{entry.description}</p>
+
+                {/* Highlights — collapsed by default, expanded on hover/focus */}
+                <ul
+                  data-highlights
+                  className="mt-3 space-y-2 overflow-hidden"
+                  style={reduced ? undefined : { height: 0, opacity: 0 }}
+                >
                   {entry.highlights.map((h, i) => (
                     <li key={i} className="text-xs text-foreground/60 leading-relaxed pl-4 relative">
-                      <span className="absolute left-0 text-accent-primary">→</span>
+                      <span className="absolute left-0 text-accent-primary">&rarr;</span>
                       {h}
                     </li>
                   ))}
@@ -79,13 +160,13 @@ export function ExperienceSlide({ isActive }: { isActive: boolean }) {
                 <div key={org.name} data-exp-entry className="border-l border-foreground/10 pl-6 relative">
                   <span className="absolute -left-[3px] top-1 w-1.5 h-1.5 bg-foreground/30" />
                   <p className="text-xs font-mono text-muted tracking-wider">{org.period}</p>
-                  <p className="text-sm font-bold mt-1">{org.name}</p>
-                  <p className="text-xs text-foreground/50">
+                  <h4 className="text-sm font-bold mt-1">{org.name}</h4>
+                  <p className="text-xs text-foreground/60">
                     {org.role} — {org.location}
                   </p>
                   <ul className="mt-2 space-y-1">
                     {org.highlights.map((h, i) => (
-                      <li key={i} className="text-xs text-foreground/50 leading-relaxed">
+                      <li key={i} className="text-xs text-foreground/60 leading-relaxed">
                         {h}
                       </li>
                     ))}

@@ -4,6 +4,7 @@
 import { useSyncExternalStore } from "react";
 
 export type GlobePhase = "loading" | "transitioning" | "ready";
+export type SlideId = "hero" | "about" | "experience" | "projects";
 
 const listeners = new Set<() => void>();
 
@@ -11,11 +12,30 @@ export const globeState = {
   phase: "loading" as GlobePhase,
   transitionStart: 0, // performance.now() timestamp when transition begins
   transitionDuration: 1200, // ms for the morph
+  activeSlide: "hero" as SlideId,
+  lastUpdate: 0,
+
+  /** Callback when a project planet is clicked (set by ProjectsSlide) */
+  onProjectClick: null as ((projectIndex: number) => void) | null,
+
+  /** Whether to show planetarium view on projects slide */
+  showPlanetarium: true,
 
   /** Update phase and notify React subscribers */
   setPhase(p: GlobePhase) {
     this.phase = p;
     listeners.forEach((l) => l());
+  },
+
+  /** Update active slide (globe reads this in rAF loop for position/size) */
+  setActiveSlide(id: SlideId) {
+    this.activeSlide = id;
+    listeners.forEach((l) => l());
+  },
+
+  setShowPlanetarium(value: boolean) {
+    this.showPlanetarium = value;
+    this.lastUpdate = Date.now(); // Trigger update
   },
 };
 
@@ -27,6 +47,6 @@ export function useGlobePhase(): GlobePhase {
       return () => listeners.delete(cb);
     },
     () => globeState.phase,
-    () => "loading" as GlobePhase, // server snapshot
+    () => "loading" as GlobePhase // server snapshot
   );
 }
