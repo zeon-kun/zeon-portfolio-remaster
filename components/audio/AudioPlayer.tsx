@@ -1,34 +1,27 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
-import { Play, Pause, Volume2, VolumeX, WifiOff } from "lucide-react";
+import { Play, Pause, Volume2, VolumeX } from "lucide-react";
 import { audioState } from "@/lib/audio";
 
-const STREAM_URL = "https://streams.ilovemusic.de/iloveradio17.mp3";
-const TRACK_LABEL = "LOFI STREAM";
+const AUDIO_SRC = "/audio/lofi.mp3";
+const TRACK_LABEL = "LOFI";
 
 export function AudioPlayer({ loaderVisible }: { loaderVisible?: boolean }) {
   const [playing, setPlaying] = useState(false);
   const [volume, setVolume] = useState(0.5);
   const [muted, setMuted] = useState(false);
-  const [offline, setOffline] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const ctxRef = useRef<AudioContext | null>(null);
   const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
 
   // Create audio element once
   useEffect(() => {
-    const audio = new Audio();
-    audio.crossOrigin = "anonymous";
-    audio.preload = "none";
+    const audio = new Audio(AUDIO_SRC);
+    audio.preload = "metadata";
     audio.volume = 0.5;
+    audio.loop = true;
     audioRef.current = audio;
-
-    audio.addEventListener("error", () => {
-      setOffline(true);
-      setPlaying(false);
-      audioState.isPlaying = false;
-    });
 
     return () => {
       audio.pause();
@@ -79,21 +72,14 @@ export function AudioPlayer({ loaderVisible }: { loaderVisible?: boolean }) {
       await ctxRef.current.resume();
     }
 
-    // Set source and play
-    if (!audio.src || offline) {
-      audio.src = STREAM_URL;
-      setOffline(false);
-    }
-
     try {
       await audio.play();
       setPlaying(true);
       audioState.isPlaying = true;
-    } catch {
-      setOffline(true);
-      audioState.isPlaying = false;
+    } catch (err) {
+      console.error("Audio playback failed:", err);
     }
-  }, [playing, offline, initAudioContext]);
+  }, [playing, initAudioContext]);
 
   const handleVolume = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -131,7 +117,7 @@ export function AudioPlayer({ loaderVisible }: { loaderVisible?: boolean }) {
 
   return (
     <div
-      className={`fixed bottom-20 right-4 md:bottom-8 md:right-8 z-2 flex items-center gap-3
+      className={`fixed bottom-20 right-4 md:bottom-8 md:right-8 z-50 flex items-center gap-3
         border border-foreground/10 bg-background/90 backdrop-blur-sm px-3 py-2
         select-none transition-all duration-700 ease-out ${loaderVisible ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"}`}
       role="region"
@@ -141,13 +127,11 @@ export function AudioPlayer({ loaderVisible }: { loaderVisible?: boolean }) {
       {/* Play / Pause */}
       <button
         onClick={togglePlay}
-        aria-label={offline ? "Stream offline" : playing ? "Pause" : "Play"}
+        aria-label={playing ? "Pause" : "Play"}
         className="flex items-center justify-center w-7 h-7 transition-colors
           focus-visible:outline-2 focus-visible:outline-accent-primary focus-visible:outline-offset-2"
       >
-        {offline ? (
-          <WifiOff size={14} className="text-muted" />
-        ) : playing ? (
+        {playing ? (
           <Pause size={14} className="text-accent-primary" />
         ) : (
           <Play size={14} className="text-foreground/60" />
@@ -156,7 +140,7 @@ export function AudioPlayer({ loaderVisible }: { loaderVisible?: boolean }) {
 
       {/* Track label */}
       <span className="font-mono text-[10px] uppercase tracking-wider text-foreground/40 hidden sm:block">
-        {offline ? "OFFLINE" : TRACK_LABEL}
+        {TRACK_LABEL}
       </span>
 
       {/* Volume — hidden on mobile to save space */}

@@ -20,6 +20,9 @@ FROM oven/bun:1.2-alpine AS builder
 
 WORKDIR /app
 
+# ADD GIT RUNTIME
+RUN apk add --no-cache git
+
 # Copy dependencies from deps stage
 COPY --from=deps /app/node_modules ./node_modules
 

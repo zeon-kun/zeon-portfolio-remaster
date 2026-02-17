@@ -1,0 +1,40 @@
+---
+title: "Building This Portfolio"
+date: "2026-02-17"
+description: "A deep dive into the architecture behind this portfolio — Next.js, GSAP, canvas globe, and Japanese brutalist design."
+tags: ["engineering", "design"]
+---
+
+## Why Another Portfolio
+
+Most developer portfolios feel the same — dark mode, gradient blobs, scroll animations. I wanted something that felt intentional. Something closer to architecture than web design.
+
+The direction: **Japanese Brutalist**. Raw structure, visible grids, generous negative space (ma/間), kanji as visual weight, and a warm earthy palette instead of the usual dark-on-dark.
+
+## The Globe
+
+The centerpiece is a wireframe sphere rendered on a 2D canvas — no Three.js, no WebGL. Just `fillRect` calls for each point.
+
+The sphere uses a Fibonacci spiral to distribute 900 points evenly. Latitude and longitude rings add wireframe structure. The whole thing rotates via manual Y/X axis rotation matrices applied per-point every frame.
+
+```
+function rotateYAxis(x, y, z, angle) {
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+  return [x * cos + z * sin, y, -x * sin + z * cos];
+}
+```
+
+When audio is playing, the globe reacts to frequency bands — bass expands the radius, treble increases point sizes, and beat detection spawns ripple waves across the surface.
+
+## Slide System
+
+Instead of scroll-based sections, the portfolio uses a slide system with GSAP-powered transitions. Each slide occupies the full viewport. Navigation happens via keyboard arrows, mouse wheel (with a dwell-at-boundary pattern to prevent accidental slides), and touch swipes.
+
+The globe smoothly lerps between positions per slide — large and centered for hero, small top-right for about, bottom-left for experience.
+
+## What I Learned
+
+- **Canvas performance matters.** 900 points at 60fps is fine, but adding per-point wave displacement calculations pushed it. Keeping the math simple (no `Math.pow`, minimal trig per point) was key.
+- **Negative space is a feature, not a bug.** The hardest design decision was leaving things empty. Every instinct says "fill the gap." Resisting that made the design work.
+- **Audio API is fragile.** Browser autoplay policies, suspended AudioContext states, and cross-origin restrictions all needed handling. The globe's audio reactivity only works after explicit user interaction.

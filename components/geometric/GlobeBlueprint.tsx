@@ -80,6 +80,7 @@ const SLIDE_CONFIG: Record<SlideId, { cxFrac: number; cyFrac: number; rFrac: num
   about: { cxFrac: 0.88, cyFrac: 0.18, rFrac: 0.14 },
   experience: { cxFrac: 0.15, cyFrac: 0.82, rFrac: 0.16 },
   projects: { cxFrac: 0.5, cyFrac: 0.5, rFrac: 0.16 }, // Same sphere size as experience
+  ambient: { cxFrac: 0.88, cyFrac: 0.15, rFrac: 0.12 }, // Small decorative top-right
 };
 
 // Solar system style: all orbits on same plane, viewed from a fixed tilt

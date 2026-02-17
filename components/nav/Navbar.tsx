@@ -1,15 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { Home, User, Briefcase, FolderGit, Linkedin, Github, Mail } from "lucide-react";
+import { Home, User, Briefcase, FolderGit, Linkedin, Github, Mail, GitCommitHorizontal, BookOpen } from "lucide-react";
 import type { SlideId } from "@/components/slides/SlideContainer";
 import { useLang, langState } from "@/lib/language";
+import { usePathname } from "next/navigation";
+import { TransitionLink } from "@/components/layout/TransitionLink";
 
 const NAV_LINKS = [
   { id: "hero" as SlideId, label: "ホーム", icon: Home, translation: "Home" },
   { id: "about" as SlideId, label: "アバウト", icon: User, translation: "About" },
   { id: "experience" as SlideId, label: "エクスペリエンス", icon: Briefcase, translation: "Experience" },
   { id: "projects" as SlideId, label: "プロジェクト", icon: FolderGit, translation: "Projects" },
+] as const;
+
+const ROUTE_LINKS = [
+  { href: "/changelog", label: "変更履歴", icon: GitCommitHorizontal, translation: "Changelog" },
+  { href: "/blog", label: "ブログ", icon: BookOpen, translation: "Blog" },
 ] as const;
 
 const SOCIAL_LINKS = [
@@ -23,45 +30,100 @@ const SOCIAL_LINKS = [
   { label: "ギットハブ", href: "https://github.com/zeon-kun", icon: Github, translation: "GitHub", external: true },
 ] as const;
 
-interface NavbarProps {
+// ─── Slides mode (used by SlideContainer on home page) ───
+interface SlideNavbarProps {
+  mode?: "slides";
   activeSlide: SlideId;
   onNavigate: (id: SlideId) => void;
   loaderVisible?: boolean;
 }
 
-export function Navbar({ activeSlide, onNavigate, loaderVisible }: NavbarProps) {
+// ─── Routes mode (used by PageOverlays on /changelog, /blog, etc.) ───
+interface RouteNavbarProps {
+  mode: "routes";
+  activeSlide?: never;
+  onNavigate?: never;
+  loaderVisible?: boolean;
+}
+
+type NavbarProps = SlideNavbarProps | RouteNavbarProps;
+
+export function Navbar(props: NavbarProps) {
+  const { loaderVisible } = props;
+  const mode = props.mode ?? "slides";
   const lang = useLang();
+  const pathname = usePathname();
   const [hoveredNav, setHoveredNav] = useState<string | null>(null);
   const [hoveredSocial, setHoveredSocial] = useState<string | null>(null);
   const [hoveredCta, setHoveredCta] = useState(false);
 
+  const isRouteMode = mode === "routes";
+  const activeSlide = isRouteMode ? undefined : props.activeSlide;
+  const onNavigate = isRouteMode ? undefined : props.onNavigate;
+
   return (
     <>
       {/* ─── Desktop top bar ─── */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 px-8 py-5 hidden md:block transition-all duration-700 ease-out ${loaderVisible ? "opacity-0 blur-sm" : "opacity-100 blur-0"}`}>
+      <nav
+        className={`fixed top-0 left-0 right-0 z-50 px-8 py-5 hidden md:block transition-all duration-700 ease-out ${loaderVisible ? "opacity-0 blur-sm" : "opacity-100 blur-0"}`}
+      >
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           {/* Logo */}
-          <button
-            onClick={() => onNavigate("hero")}
-            translate="no"
-            className="flex items-center gap-1 text-2xl font-black tracking-tight kanji-brutal hover:text-accent-primary transition-colors"
-          >
-            <span className="text-foreground">路四</span>
-          </button>
+          {isRouteMode ? (
+            <TransitionLink
+              href="/"
+              translate="no"
+              className="flex items-center gap-1 text-2xl font-black tracking-tight kanji-brutal hover:text-accent-primary transition-colors"
+            >
+              <span className="text-foreground">路四</span>
+            </TransitionLink>
+          ) : (
+            <button
+              onClick={() => onNavigate?.("hero")}
+              translate="no"
+              className="flex items-center gap-1 text-2xl font-black tracking-tight kanji-brutal hover:text-accent-primary transition-colors"
+            >
+              <span className="text-foreground">路四</span>
+            </button>
+          )}
 
-          {/* Center group - Slide navigation */}
+          {/* Center group - Navigation */}
           <div className="flex items-center">
             <div className="flex items-center gap-1 px-2 py-1.5 border border-foreground/10 bg-background/60 backdrop-blur-md">
+              {/* Slide nav items */}
               {NAV_LINKS.map((link) => {
                 const Icon = link.icon;
-                const isActive = activeSlide === link.id;
+                const isActive = !isRouteMode && activeSlide === link.id;
                 const isHovered = hoveredNav === link.label;
                 const displayLabel = lang === "jp" ? link.label : link.translation.toUpperCase();
+
+                if (isRouteMode) {
+                  return (
+                    <TransitionLink
+                      key={link.id}
+                      href={link.id === "hero" ? "/" : `/#${link.id}`}
+                      onMouseEnter={() => setHoveredNav(link.label)}
+                      onMouseLeave={() => setHoveredNav(null)}
+                      className="relative flex items-center gap-2 px-4 py-2 text-xs font-bold tracking-wider transition-colors duration-150 ease-out text-muted hover:text-foreground hover:bg-foreground/5"
+                    >
+                      <Icon size={14} className="opacity-70" />
+                      <span className={lang === "jp" ? "font-jp" : "font-mono"}>{displayLabel}</span>
+                      {lang === "jp" && (
+                        <span
+                          className={`absolute left-1/2 -translate-x-1/2 top-full mt-2 px-2 py-1 text-[10px] font-mono font-normal tracking-wider uppercase bg-foreground text-background whitespace-nowrap transition-all duration-200 pointer-events-none z-50 ${isHovered ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-1"}`}
+                        >
+                          {link.translation}
+                          <span className="absolute left-1/2 -translate-x-1/2 -top-1 w-2 h-2 bg-foreground rotate-45" />
+                        </span>
+                      )}
+                    </TransitionLink>
+                  );
+                }
 
                 return (
                   <button
                     key={link.id}
-                    onClick={() => onNavigate(link.id)}
+                    onClick={() => onNavigate?.(link.id)}
                     onMouseEnter={() => setHoveredNav(link.label)}
                     onMouseLeave={() => setHoveredNav(null)}
                     aria-current={isActive ? "page" : undefined}
@@ -98,6 +160,58 @@ export function Navbar({ activeSlide, onNavigate, loaderVisible }: NavbarProps) 
                       </span>
                     )}
                   </button>
+                );
+              })}
+
+              {/* Divider between slide links and route links */}
+              <div className="w-[2px] h-5 bg-foreground/30 mx-1" />
+
+              {/* Route links (changelog, blog) */}
+              {ROUTE_LINKS.map((link) => {
+                const Icon = link.icon;
+                const isActive = isRouteMode && pathname.startsWith(link.href);
+                const isHovered = hoveredNav === link.label;
+                const displayLabel = lang === "jp" ? link.label : link.translation.toUpperCase();
+
+                return (
+                  <TransitionLink
+                    key={link.href}
+                    href={link.href}
+                    onMouseEnter={() => setHoveredNav(link.label)}
+                    onMouseLeave={() => setHoveredNav(null)}
+                    aria-current={isActive ? "page" : undefined}
+                    className={`
+                      relative flex items-center gap-2 px-4 py-2
+                      text-xs font-bold tracking-wider
+                      transition-colors duration-150 ease-out
+                      ${
+                        isActive
+                          ? "bg-accent-primary text-background"
+                          : "text-muted hover:text-foreground hover:bg-foreground/5"
+                      }
+                    `}
+                  >
+                    <Icon size={14} className={isActive ? "opacity-100" : "opacity-70"} />
+                    <span className={lang === "jp" ? "font-jp" : "font-mono"}>{displayLabel}</span>
+
+                    {lang === "jp" && (
+                      <span
+                        className={`
+                          absolute left-1/2 -translate-x-1/2 top-full mt-2
+                          px-2 py-1
+                          text-[10px] font-mono font-normal tracking-wider uppercase
+                          bg-foreground text-background
+                          whitespace-nowrap
+                          transition-all duration-200
+                          pointer-events-none z-50
+                          ${isHovered ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-1"}
+                        `}
+                      >
+                        {link.translation}
+                        <span className="absolute left-1/2 -translate-x-1/2 -top-1 w-2 h-2 bg-foreground rotate-45" />
+                      </span>
+                    )}
+                  </TransitionLink>
                 );
               })}
             </div>
@@ -183,14 +297,26 @@ export function Navbar({ activeSlide, onNavigate, loaderVisible }: NavbarProps) 
       </nav>
 
       {/* ─── Mobile top bar (logo + CTA only) ─── */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 px-6 py-4 flex md:hidden items-center justify-between transition-all duration-700 ease-out ${loaderVisible ? "opacity-0 blur-sm" : "opacity-100 blur-0"}`}>
-        <button
-          onClick={() => onNavigate("hero")}
-          translate="no"
-          className="text-xl font-black tracking-tight kanji-brutal text-foreground"
-        >
-          路四
-        </button>
+      <nav
+        className={`fixed top-0 left-0 right-0 z-50 px-6 py-4 flex md:hidden items-center justify-between transition-all duration-700 ease-out ${loaderVisible ? "opacity-0 blur-sm" : "opacity-100 blur-0"}`}
+      >
+        {isRouteMode ? (
+          <TransitionLink
+            href="/"
+            translate="no"
+            className="text-xl font-black tracking-tight kanji-brutal text-foreground"
+          >
+            路四
+          </TransitionLink>
+        ) : (
+          <button
+            onClick={() => onNavigate?.("hero")}
+            translate="no"
+            className="text-xl font-black tracking-tight kanji-brutal text-foreground"
+          >
+            路四
+          </button>
+        )}
 
         <div className="flex items-center gap-3">
           <button
@@ -206,7 +332,7 @@ export function Navbar({ activeSlide, onNavigate, loaderVisible }: NavbarProps) 
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 bg-accent-primary text-background px-4 py-2 text-xs font-bold font-jp"
           >
-            <Linkedin size={14} />
+            <Linkedin size={16} />
             {lang === "jp" ? "繋がりましょう !" : "LET'S CONNECT !"}
           </a>
         </div>
@@ -218,15 +344,30 @@ export function Navbar({ activeSlide, onNavigate, loaderVisible }: NavbarProps) 
         aria-label="Section navigation"
       >
         <div className="flex items-center justify-around px-4 py-2">
+          {/* Slide nav items */}
           {NAV_LINKS.map((link) => {
             const Icon = link.icon;
-            const isActive = activeSlide === link.id;
+            const isActive = !isRouteMode && activeSlide === link.id;
             const mobileLabel = lang === "jp" ? link.label : link.translation.toUpperCase();
+
+            if (isRouteMode) {
+              return (
+                <TransitionLink
+                  key={link.id}
+                  href={link.id === "hero" ? "/" : `/#${link.id}`}
+                  aria-label={link.translation}
+                  className="flex flex-col items-center gap-1 px-3 py-1.5 transition-colors duration-150 text-muted"
+                >
+                  <Icon size={18} strokeWidth={1.5} />
+                  <span className="text-[8px] font-mono uppercase tracking-wider">{mobileLabel}</span>
+                </TransitionLink>
+              );
+            }
 
             return (
               <button
                 key={link.id}
-                onClick={() => onNavigate(link.id)}
+                onClick={() => onNavigate?.(link.id)}
                 aria-label={link.translation}
                 aria-current={isActive ? "page" : undefined}
                 className={`
@@ -238,6 +379,25 @@ export function Navbar({ activeSlide, onNavigate, loaderVisible }: NavbarProps) 
                 <Icon size={18} strokeWidth={isActive ? 2.5 : 1.5} />
                 <span className="text-[8px] font-mono uppercase tracking-wider">{mobileLabel}</span>
               </button>
+            );
+          })}
+
+          {/* Route links in mobile bar */}
+          {ROUTE_LINKS.map((link) => {
+            const Icon = link.icon;
+            const isActive = isRouteMode && pathname.startsWith(link.href);
+            const mobileLabel = lang === "jp" ? link.label : link.translation.toUpperCase();
+
+            return (
+              <TransitionLink
+                key={link.href}
+                href={link.href}
+                aria-label={link.translation}
+                className={`flex flex-col items-center gap-1 px-3 py-1.5 transition-colors duration-150 ${isActive ? "text-accent-primary" : "text-muted"}`}
+              >
+                <Icon size={18} strokeWidth={isActive ? 2.5 : 1.5} />
+                <span className="text-[8px] font-mono uppercase tracking-wider">{mobileLabel}</span>
+              </TransitionLink>
             );
           })}
 

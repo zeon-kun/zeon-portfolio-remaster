@@ -4,7 +4,7 @@
 import { useSyncExternalStore } from "react";
 
 export type GlobePhase = "loading" | "transitioning" | "ready";
-export type SlideId = "hero" | "about" | "experience" | "projects";
+export type SlideId = "hero" | "about" | "experience" | "projects" | "ambient";
 
 const listeners = new Set<() => void>();
 

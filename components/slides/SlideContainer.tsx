@@ -15,6 +15,7 @@ import { BlueprintElements } from "../geometric/GlobeBlueprint";
 import { GestureHint } from "./GestureHint";
 import { AudioPlayer } from "../audio/AudioPlayer";
 import { useGlobePhase, globeState } from "@/lib/globe-state";
+import { useTransitionPhase } from "@/lib/transition";
 
 gsap.registerPlugin(useGSAP);
 
@@ -23,7 +24,8 @@ export type SlideId = (typeof SLIDES)[number];
 
 export function SlideContainer() {
   const globePhase = useGlobePhase();
-  const isLoaderVisible = globePhase !== "ready";
+  const transitionPhase = useTransitionPhase();
+  const isLoaderVisible = globePhase !== "ready" || transitionPhase === "exiting";
   const [activeIndex, setActiveIndex] = useState(0);
 
   const isTransitioning = useRef(false);
@@ -36,8 +38,9 @@ export function SlideContainer() {
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
   const liveRegionRef = useRef<HTMLDivElement>(null);
 
-  // Always start at hero on page load — clear any stale hash
+  // Always start at hero on page load — clear any stale hash and reset globe target
   useEffect(() => {
+    globeState.activeSlide = "hero";
     if (window.location.hash) {
       window.history.replaceState(null, "", window.location.pathname);
     }
@@ -314,7 +317,7 @@ export function SlideContainer() {
 
       <div ref={liveRegionRef} role="status" aria-live="polite" aria-atomic="true" className="sr-only" />
 
-      <div ref={containerRef} id="main" className={`relative z-10 w-full h-screen contain-paint overflow-hidden transition-opacity duration-500 ${isLoaderVisible ? "opacity-0" : "opacity-100"}`}>
+      <div ref={containerRef} id="main" className={`relative z-10 w-full h-screen contain-paint overflow-hidden transition-all duration-500 ease-out ${isLoaderVisible ? "opacity-0 blur-sm" : "opacity-100 blur-0"}`}>
         <div
           ref={setSlideRef(0)}
           role="region"
