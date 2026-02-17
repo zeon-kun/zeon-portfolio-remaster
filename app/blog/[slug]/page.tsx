@@ -7,6 +7,8 @@ import { mdxComponents } from "@/components/blog/MDXComponents";
 import { BlogToC } from "@/components/blog/BlogToC";
 import { TransitionLink } from "@/components/layout/TransitionLink";
 import { ArrowLeft } from "lucide-react";
+import rehypeHighlight from "rehype-highlight";
+import remarkGfm from "remark-gfm";
 
 export const dynamic = "force-static";
 
@@ -14,11 +16,7 @@ export async function generateStaticParams() {
   return getAllSlugs().map((slug) => ({ slug }));
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const post = getPostBySlug(slug);
   if (!post) return { title: "Not Found" };
@@ -29,11 +27,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function BlogPostPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const post = getPostBySlug(slug);
   if (!post) notFound();
@@ -45,7 +39,8 @@ export default async function BlogPostPage({
     components: mdxComponents,
     options: {
       mdxOptions: {
-        rehypePlugins: [rehypeSlug],
+        remarkPlugins: [remarkGfm],
+        rehypePlugins: [rehypeSlug, rehypeHighlight],
       },
     },
   });
@@ -70,11 +65,16 @@ export default async function BlogPostPage({
           Back to blog
         </TransitionLink>
 
+        {/* Banner */}
+        {post.meta.banner && (
+          <div className="mb-8 border-2 border-foreground/8 overflow-hidden">
+            <img src={post.meta.banner} alt="" className="w-full h-auto object-cover max-h-[280px]" />
+          </div>
+        )}
+
         {/* Article header */}
         <header className="mb-10">
-          <h1 className="text-2xl md:text-3xl font-black kanji-brutal text-foreground mb-3">
-            {post.meta.title}
-          </h1>
+          <h1 className="text-2xl md:text-3xl heading-serif text-foreground mb-3">{post.meta.title}</h1>
           <div className="flex items-center gap-3 text-[10px] font-mono text-muted/60 tracking-wider uppercase">
             {formattedDate && <time>{formattedDate}</time>}
             {post.meta.tags.length > 0 && (

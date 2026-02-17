@@ -3,21 +3,26 @@ title: "Building This Portfolio"
 date: "2026-02-17"
 description: "A deep dive into the architecture behind this portfolio — Next.js, GSAP, canvas globe, and Japanese brutalist design."
 tags: ["engineering", "design"]
+banner: "/blog/building-this-portfolio-banner.svg"
 ---
 
 ## Why Another Portfolio
 
-Most developer portfolios feel the same — dark mode, gradient blobs, scroll animations. I wanted something that felt intentional. Something closer to architecture than web design.
+Most developer portfolios feel interchangeable—dark mode, gradient blobs, and scroll-triggered fade-ins. I wanted something that felt intentional. Something closer to architecture than web design.
 
-The direction: **Japanese Brutalist**. Raw structure, visible grids, generous negative space (ma/間), kanji as visual weight, and a warm earthy palette instead of the usual dark-on-dark.
+The direction: **Japanese Brutalist**. Raw structure, visible grids, generous negative space (**ma/間**), kanji as visual weight, and a warm, earthy palette instead of the usual dark-on-dark aesthetic.
 
-## The Globe
+---
 
-The centerpiece is a wireframe sphere rendered on a 2D canvas — no Three.js, no WebGL. Just `fillRect` calls for each point.
+## The Globe: 3D Math in a 2D World
 
-The sphere uses a Fibonacci spiral to distribute 900 points evenly. Latitude and longitude rings add wireframe structure. The whole thing rotates via manual Y/X axis rotation matrices applied per-point every frame.
+The centerpiece is a wireframe sphere rendered on a 2D canvas. No Three.js. No WebGL. Just `fillRect` calls for each point to maintain a raw, low-fi aesthetic.
 
-```
+### The Mathematics
+
+The sphere uses a **Fibonacci spiral** to distribute 900 points evenly across the surface. Latitude and longitude rings add structural wireframe lines. The entire system rotates via manual rotation matrices applied to every point, every frame.
+
+```javascript
 function rotateYAxis(x, y, z, angle) {
   const cos = Math.cos(angle);
   const sin = Math.sin(angle);
@@ -25,16 +30,60 @@ function rotateYAxis(x, y, z, angle) {
 }
 ```
 
-When audio is playing, the globe reacts to frequency bands — bass expands the radius, treble increases point sizes, and beat detection spawns ripple waves across the surface.
+### Audio Reactivity
 
-## Slide System
+When audio is playing, the globe responds to real-time frequency analysis:
 
-Instead of scroll-based sections, the portfolio uses a slide system with GSAP-powered transitions. Each slide occupies the full viewport. Navigation happens via keyboard arrows, mouse wheel (with a dwell-at-boundary pattern to prevent accidental slides), and touch swipes.
+- **Bass frequencies** expand the sphere's radius.
+- **Treble frequencies** increase individual point sizes.
+- **Beat detection** spawns ripple waves that propagate across the surface.
 
-The globe smoothly lerps between positions per slide — large and centered for hero, small top-right for about, bottom-left for experience.
+> **Note:** The `AudioContext` only initializes after explicit user interaction to comply with modern browser autoplay policies.
 
-## What I Learned
+---
 
-- **Canvas performance matters.** 900 points at 60fps is fine, but adding per-point wave displacement calculations pushed it. Keeping the math simple (no `Math.pow`, minimal trig per point) was key.
-- **Negative space is a feature, not a bug.** The hardest design decision was leaving things empty. Every instinct says "fill the gap." Resisting that made the design work.
-- **Audio API is fragile.** Browser autoplay policies, suspended AudioContext states, and cross-origin restrictions all needed handling. The globe's audio reactivity only works after explicit user interaction.
+## Navigation: Slides, Not Scrolling
+
+Instead of standard scroll-based sections, the portfolio uses a robust slide system with **GSAP-powered transitions**. Each slide occupies the full viewport, creating a "spatial" feel.
+
+**Navigation Methods:**
+
+- **Keyboard:** Arrow keys for precise jumping.
+- **Mouse:** Wheel interaction with a "dwell-at-boundary" pattern to prevent accidental rapid-fire slides.
+- **Touch:** Swipe gestures for mobile parity.
+
+The globe smoothly interpolates (lerps) between positions for each slide—large and centered for the **Hero**, small and top-right for **About**, and bottom-left for **Experience**.
+
+---
+
+## Design System in Practice
+
+### Color & Typography
+
+The palette is intentionally muted. Background is a warm clay (`#f5f0eb`), foreground is a soft near-black (`#1a1a1a`), and the accent is a terracotta (`#a35b42`) reserved for active states.
+
+| Element                | Typeface     | Style                      |
+| :--------------------- | :----------- | :------------------------- |
+| **Kanji Display**      | Noto Sans JP | 900 weight, Massive scale  |
+| **Editorial Headings** | Geist        | 600 weight, Semi-bold      |
+| **Structural Labels**  | Geist Mono   | Uppercase, tracking-widest |
+
+### The Grid
+
+A persistent architectural grid overlays every slide—vertical lines at 8%, 25%, 50%, 75%, and 92% width; horizontal lines at 12%, 38%, 72%, and 88% height. These aren't decorative; they provide the structural rhythm that makes the negative space feel intentional rather than empty.
+
+---
+
+## Lessons Learned
+
+1. **Canvas Performance:** 900 points at 60fps is manageable, but per-point wave displacement calculations pushed the limits. Minimizing trigonometry and avoiding expensive operations per point was essential.
+2. **Embracing "Ma":** The hardest design decision was leaving gaps empty. Resisting the impulse to fill every space is what makes the design work.
+3. **Fragile APIs:** The Web Audio API is temperamental. Browser policies and suspended states required defensive handling and graceful degradation.
+
+## Technical Stack
+
+- **Framework:** Next.js 16 (App Router)
+- **Animation:** GSAP 3.14
+- **Styling:** Tailwind CSS 4
+- **Typography:** Noto Sans JP, Geist Mono, Outfit
+- **State:** React 19 Server Components

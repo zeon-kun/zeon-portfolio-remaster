@@ -42,7 +42,7 @@ export default async function TagPage({
         </TransitionLink>
 
         <header className="mb-12">
-          <h1 className="text-3xl md:text-4xl font-black kanji-brutal text-foreground mb-2">
+          <h1 className="text-3xl md:text-4xl heading-serif text-foreground mb-2">
             #{tag}
           </h1>
           <p className="text-xs font-mono uppercase tracking-[0.15em] text-muted">

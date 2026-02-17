@@ -178,7 +178,7 @@ export function HeroSlide({ isActive }: { isActive: boolean }) {
               <div className="overflow-hidden pl-2">
                 <h2
                   data-hero-name
-                  className="text-[clamp(1.5rem,4vw,3rem)] font-black tracking-[0.3em] text-foreground/60 uppercase"
+                  className="text-[clamp(1.5rem,4vw,3rem)] heading-serif tracking-[0.3em] text-foreground/60 uppercase"
                 >
                   {"Jeong".split("").map((char, i) => (
                     <span key={i} className="inline-block overflow-hidden">

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { Geist_Mono } from "next/font/google";
-import { Noto_Sans_JP } from "next/font/google";
+import { Geist_Mono, Noto_Sans_JP, Instrument_Serif, Outfit, Geist } from "next/font/google";
 import "./globals.css";
 import { PageLoader } from "./loader";
 
@@ -16,6 +15,16 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// ── Heading serif font ──
+// Swap this import to change the heading typeface globally.
+// Good alternatives: Playfair_Display, Cormorant_Garamond, DM_Serif_Display
+const headingFont = Geist({
+  variable: "--font-heading",
+  subsets: ["latin"],
+  weight: "600", // Geist handles variable weights well; 600-800 is ideal for headings.
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Zeon | Portfolio",
   description: "Software engineer portfolio",
@@ -28,7 +37,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${notoSansJP.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${notoSansJP.variable} ${geistMono.variable} ${headingFont.variable} antialiased`}>
         <PageLoader />
         <a
           href="#main"

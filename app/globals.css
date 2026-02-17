@@ -10,6 +10,16 @@
   --accent-primary: #a35b42; 
   --border: rgba(0, 0, 0, 0.08);
   --crosshair: #999999;
+
+  /* HLJS - Aligned with your actual design tokens */
+  --hljs-bg: #ebe5de;           /* Slightly darker than page bg for contrast */
+  --hljs-color: #1a1a1a;        /* Match foreground */
+  --hljs-keyword: #a35b42;      /* Your actual terracotta accent */
+  --hljs-string: #5c6b52;       /* Muted olive - complements terracotta */
+  --hljs-number: #c46a4d;       /* Lighter terracotta variant */
+  --hljs-comment: #8a8278;      /* Warm gray from muted palette */
+  --hljs-function: #3d3630;     /* Dark warm brown */
+  --hljs-operator: #6e6860;     /* Match muted text */
 }
 
 @theme inline {
@@ -23,6 +33,7 @@
   --font-sans: var(--font-noto-jp), system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
   --font-jp: var(--font-noto-jp);
+  --font-heading: var(--font-heading), Georgia, serif;
 }
 
 body {
@@ -60,11 +71,19 @@ body {
   text-transform: uppercase;
 }
 
-/* Kanji display */
+/* Kanji display — keep Noto Sans JP Black for actual kanji characters */
 .kanji-brutal {
   font-family: var(--font-jp);
   font-weight: 900;
   line-height: 1;
+}
+
+/* English/Latin heading serif — editorial, pairs with brutalist grid */
+.heading-serif {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
 }
 
 /* Typewriter cursor blink */
@@ -93,3 +112,95 @@ body {
   contain: paint;
 }
 /* z-index layers: canvas z-5, #main z-10, planet overlay z-15, navbar z-50, modal z-100 */
+
+/* Code block container - fixes the gray area issue */
+pre {
+  background: transparent !important;
+  margin: 0;
+  padding: 0;
+}
+
+pre code.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 1.25em;
+  background: var(--hljs-bg) !important;  /* Use CSS var, force override */
+  color: var(--hljs-color);
+  border-radius: 4px;                      /* Sharper radius for brutalist feel */
+  font-family: var(--font-mono), 'SF Mono', Monaco, monospace;
+  font-size: 0.85em;
+  line-height: 1.6;
+  border: 1px solid var(--border);         /* Subtle border for definition */
+}
+
+/* Inline code */
+code:not(.hljs) {
+  background: rgba(163, 91, 66, 0.1);      /* Terracotta tint */
+  color: var(--accent-primary);
+  padding: 0.1em 0.2em;
+  border-radius: 3px;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.9em;
+}
+
+/* Syntax highlighting - using your design tokens */
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-addition {
+  color: var(--hljs-keyword);
+  font-weight: 600;
+}
+
+.hljs-string,
+.hljs-title,
+.hljs-section,
+.hljs-built_in,
+.hljs-literal {
+  color: var(--hljs-string);
+}
+
+.hljs-number,
+.hljs-meta,
+.hljs-bullet,
+.hljs-code,
+.hljs-subst {
+  color: var(--hljs-number);
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: var(--hljs-comment);
+  font-style: italic;
+}
+
+.hljs-name,
+.hljs-attribute,
+.hljs-tag,
+.hljs-regexp,
+.hljs-link,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-function {
+  color: var(--hljs-function);
+}
+
+.hljs-variable,
+.hljs-template-variable,
+.hljs-class .hljs-title,
+.hljs-type {
+  color: var(--hljs-color);
+}
+
+.hljs-operator,
+.hljs-punctuation {
+  color: var(--hljs-operator);
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: 700;
+  color: var(--hljs-keyword);
+}

@@ -10,6 +10,7 @@ export type PostMeta = {
   date: string;
   description: string;
   tags: string[];
+  banner?: string;
 };
 
 export type TocEntry = {
@@ -35,6 +36,7 @@ export function getAllPosts(): PostMeta[] {
         date: (data.date as string) || "",
         description: (data.description as string) || "",
         tags: (data.tags as string[]) || [],
+        banner: (data.banner as string) || undefined,
       };
     })
     .sort((a, b) => (a.date > b.date ? -1 : 1));
@@ -54,6 +56,7 @@ export function getPostBySlug(slug: string): { meta: PostMeta; content: string }
       date: (data.date as string) || "",
       description: (data.description as string) || "",
       tags: (data.tags as string[]) || [],
+      banner: (data.banner as string) || undefined,
     },
     content,
   };

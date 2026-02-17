@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400" fill="none">
+  <rect width="1200" height="400" fill="#f5f0eb"/>
+
+  <!-- Structural grid lines -->
+  <line x1="96" y1="0" x2="96" y2="400" stroke="#1a1a1a" stroke-opacity="0.06" stroke-width="1"/>
+  <line x1="300" y1="0" x2="300" y2="400" stroke="#1a1a1a" stroke-opacity="0.06" stroke-width="1"/>
+  <line x1="600" y1="0" x2="600" y2="400" stroke="#1a1a1a" stroke-opacity="0.06" stroke-width="1"/>
+  <line x1="900" y1="0" x2="900" y2="400" stroke="#1a1a1a" stroke-opacity="0.06" stroke-width="1"/>
+  <line x1="1104" y1="0" x2="1104" y2="400" stroke="#1a1a1a" stroke-opacity="0.06" stroke-width="1"/>
+
+  <line x1="0" y1="48" x2="1200" y2="48" stroke="#1a1a1a" stroke-opacity="0.06" stroke-width="1"/>
+  <line x1="0" y1="152" x2="1200" y2="152" stroke="#1a1a1a" stroke-opacity="0.06" stroke-width="1"/>
+  <line x1="0" y1="288" x2="1200" y2="288" stroke="#1a1a1a" stroke-opacity="0.06" stroke-width="1"/>
+  <line x1="0" y1="352" x2="1200" y2="352" stroke="#1a1a1a" stroke-opacity="0.06" stroke-width="1"/>
+
+  <!-- Dot markers at intersections -->
+  <circle cx="96" cy="48" r="2" fill="#1a1a1a" opacity="0.12"/>
+  <circle cx="300" cy="48" r="2" fill="#1a1a1a" opacity="0.12"/>
+  <circle cx="600" cy="152" r="2" fill="#1a1a1a" opacity="0.12"/>
+  <circle cx="900" cy="288" r="2" fill="#1a1a1a" opacity="0.12"/>
+  <circle cx="1104" cy="352" r="2" fill="#1a1a1a" opacity="0.12"/>
+  <circle cx="96" cy="288" r="2" fill="#1a1a1a" opacity="0.12"/>
+  <circle cx="300" cy="352" r="2" fill="#1a1a1a" opacity="0.12"/>
+
+  <!-- Wireframe sphere (simplified) -->
+  <circle cx="780" cy="200" r="120" stroke="#1a1a1a" stroke-opacity="0.1" stroke-width="1" fill="none"/>
+  <ellipse cx="780" cy="200" rx="120" ry="40" stroke="#1a1a1a" stroke-opacity="0.08" stroke-width="0.75" fill="none"/>
+  <ellipse cx="780" cy="200" rx="120" ry="80" stroke="#1a1a1a" stroke-opacity="0.08" stroke-width="0.75" fill="none"/>
+  <ellipse cx="780" cy="200" rx="40" ry="120" stroke="#1a1a1a" stroke-opacity="0.08" stroke-width="0.75" fill="none"/>
+  <ellipse cx="780" cy="200" rx="80" ry="120" stroke="#1a1a1a" stroke-opacity="0.08" stroke-width="0.75" fill="none"/>
+
+  <!-- Orbit rings -->
+  <circle cx="780" cy="200" r="155" stroke="#a35b42" stroke-opacity="0.15" stroke-width="0.5" fill="none" stroke-dasharray="3 6"/>
+  <circle cx="780" cy="200" r="185" stroke="#a35b42" stroke-opacity="0.1" stroke-width="0.5" fill="none" stroke-dasharray="2 8"/>
+
+  <!-- Planet dots on orbits -->
+  <circle cx="935" cy="200" r="4" fill="#a35b42" opacity="0.4"/>
+  <circle cx="780" cy="15" r="3" fill="#a35b42" opacity="0.3"/>
+  <circle cx="595" cy="200" r="3.5" fill="#a35b42" opacity="0.35"/>
+
+  <!-- Kanji decorative text -->
+  <text x="140" y="230" font-family="'Noto Sans JP', sans-serif" font-weight="900" font-size="140" fill="#1a1a1a" opacity="0.04">構</text>
+  <text x="340" y="340" font-family="'Noto Sans JP', sans-serif" font-weight="900" font-size="64" fill="#1a1a1a" opacity="0.04">造</text>
+
+  <!-- Coordinate annotations -->
+  <text x="96" y="38" font-family="'Geist Mono', monospace" font-size="8" fill="#6e6860" opacity="0.4">X: 0.08</text>
+  <text x="1104" y="38" font-family="'Geist Mono', monospace" font-size="8" fill="#6e6860" opacity="0.4" text-anchor="end">X: 0.92</text>
+  <text x="1160" y="155" font-family="'Geist Mono', monospace" font-size="8" fill="#6e6860" opacity="0.4" text-anchor="end">Y: 0.38</text>
+
+  <!-- Accent line -->
+  <line x1="96" y1="380" x2="400" y2="380" stroke="#a35b42" stroke-opacity="0.25" stroke-width="1.5"/>
+</svg>

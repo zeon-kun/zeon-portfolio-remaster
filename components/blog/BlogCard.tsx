@@ -1,9 +1,13 @@
 "use client";
 
-import { useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useCallback, useRef } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { TransitionLink } from "@/components/layout/TransitionLink";
+import { transitionState } from "@/lib/transition";
+import { prefersReducedMotion } from "@/lib/motion";
 import type { PostMeta } from "@/lib/blog";
+
+const EXIT_DURATION = 600;
 
 function formatDate(dateStr: string): string {
   const d = new Date(dateStr);
@@ -12,10 +16,36 @@ function formatDate(dateStr: string): string {
 
 export function BlogCard({ post }: { post: PostMeta }) {
   const router = useRouter();
+  const pathname = usePathname();
+  const navigatingRef = useRef(false);
 
-  const handleCardClick = useCallback(() => {
-    router.push(`/blog/${post.slug}`);
-  }, [router, post.slug]);
+  const handleCardClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      // If a child link (title or tag) already handled navigation, bail
+      const target = e.target as HTMLElement;
+      if (target.closest("a")) return;
+
+      const href = `/blog/${post.slug}`;
+      if (href === pathname) return;
+      if (transitionState.phase !== "idle") return;
+      if (navigatingRef.current) return;
+
+      navigatingRef.current = true;
+
+      if (prefersReducedMotion()) {
+        router.push(href);
+        return;
+      }
+
+      transitionState.targetHref = href;
+      transitionState.setPhase("exiting");
+
+      setTimeout(() => {
+        router.push(href);
+      }, EXIT_DURATION);
+    },
+    [router, pathname, post.slug]
+  );
 
   return (
     <div
@@ -23,9 +53,20 @@ export function BlogCard({ post }: { post: PostMeta }) {
       onClick={handleCardClick}
       className="group cursor-pointer py-5 border-b border-foreground/6 hover:bg-foreground/[0.02] transition-colors duration-150 -mx-3 px-3"
     >
+      {/* Banner thumbnail — full-width, containerized */}
+      {post.banner && (
+        <div className="mb-3 border-2 border-foreground/8 overflow-hidden">
+          <img
+            src={post.banner}
+            alt=""
+            className="w-full h-auto object-cover max-h-[140px] group-hover:scale-[1.01] transition-transform duration-300 ease-out"
+          />
+        </div>
+      )}
+
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
-          <h2 className="text-base font-bold text-foreground group-hover:text-accent-primary transition-colors duration-150 mb-1">
+          <h2 className="text-lg heading-serif text-foreground group-hover:text-accent-primary transition-colors duration-150 mb-1">
             <TransitionLink href={`/blog/${post.slug}`} className="hover:text-accent-primary">
               {post.title}
             </TransitionLink>

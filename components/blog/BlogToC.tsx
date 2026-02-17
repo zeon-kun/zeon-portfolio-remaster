@@ -1,34 +1,62 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import type { TocEntry } from "@/lib/blog";
 
 export function BlogToC({ entries }: { entries: TocEntry[] }) {
   const [activeId, setActiveId] = useState<string>("");
+  const rafId = useRef(0);
+
+  const updateActive = useCallback(() => {
+    if (entries.length === 0) return;
+
+    const headings = entries
+      .map((e) => ({ id: e.id, el: document.getElementById(e.id) }))
+      .filter((h): h is { id: string; el: HTMLElement } => h.el !== null);
+
+    if (headings.length === 0) return;
+
+    // If scrolled to bottom, activate last heading
+    const scrollBottom = window.scrollY + window.innerHeight;
+    const docHeight = document.documentElement.scrollHeight;
+    if (docHeight - scrollBottom < 40) {
+      setActiveId(headings[headings.length - 1].id);
+      return;
+    }
+
+    // Find the last heading that has scrolled past the top threshold
+    const threshold = 100;
+    let current = headings[0].id;
+
+    for (const { id, el } of headings) {
+      const top = el.getBoundingClientRect().top;
+      if (top <= threshold) {
+        current = id;
+      } else {
+        break;
+      }
+    }
+
+    setActiveId(current);
+  }, [entries]);
 
   useEffect(() => {
     if (entries.length === 0) return;
 
-    const headings = entries
-      .map((e) => document.getElementById(e.id))
-      .filter(Boolean) as HTMLElement[];
+    function onScroll() {
+      cancelAnimationFrame(rafId.current);
+      rafId.current = requestAnimationFrame(updateActive);
+    }
 
-    if (headings.length === 0) return;
+    // Set initial active heading
+    updateActive();
 
-    const observer = new IntersectionObserver(
-      (observed) => {
-        for (const entry of observed) {
-          if (entry.isIntersecting) {
-            setActiveId(entry.target.id);
-          }
-        }
-      },
-      { rootMargin: "-80px 0px -60% 0px", threshold: 0.1 }
-    );
-
-    headings.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, [entries]);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(rafId.current);
+    };
+  }, [entries, updateActive]);
 
   if (entries.length === 0) return null;
 
