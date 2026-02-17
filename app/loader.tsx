@@ -13,9 +13,9 @@ const TIPS = [
   "Did you know? The kanji 路四 represents my name",
 ];
 
-const INITIAL_LOAD_DELAY = 1800;
-const ROUTE_LOAD_DELAY = 300;
-const EXIT_FADE_DURATION = 500; // ms for overlay to fade in over current page
+const INITIAL_LOAD_DELAY = 500;
+const ROUTE_LOAD_DELAY = 200;
+const EXIT_FADE_DURATION = 200; // ms for overlay to fade in over current page
 
 export function PageLoader() {
   const [loading, setLoading] = useState(true);
@@ -110,17 +110,9 @@ export function PageLoader() {
   // During exit cover phase: overlay fades from opacity-0 → opacity-1
   // During normal loader: overlay is opacity-1 (coverVisible is true or unused)
   // During fading out: overlay goes opacity-0
-  const bgOpacity = fading
-    ? "opacity-0"
-    : coverVisible || !transitionState.targetHref
-      ? "opacity-100"
-      : "opacity-0";
+  const bgOpacity = fading ? "opacity-0" : coverVisible || !transitionState.targetHref ? "opacity-100" : "opacity-0";
 
-  const textOpacity = fading
-    ? "opacity-0"
-    : coverVisible || !transitionState.targetHref
-      ? "opacity-100"
-      : "opacity-0";
+  const textOpacity = fading ? "opacity-0" : coverVisible || !transitionState.targetHref ? "opacity-100" : "opacity-0";
 
   return (
     <>
