@@ -140,6 +140,9 @@ export function BlueprintElements() {
     let currentRadius = 0;
     let lerpInitialized = false;
 
+    // Globe visibility toggle — lerps to 0 when hidden, 1 when visible
+    let visibilityScale = 1.0;
+
     const LERP_FACTOR = 0.04;
 
     const BASE_ROTATION_SPEED = 0.003;
@@ -248,6 +251,12 @@ export function BlueprintElements() {
       const cssWidth = w / dpr;
       const isMobile = cssWidth < 768;
 
+      // Globe visibility toggle (lerp for smooth fade)
+      const visTarget = globeState.globeVisible ? 1.0 : 0.0;
+      visibilityScale += (visTarget - visibilityScale) * 0.08;
+      // Mobile: reduce base opacity so globe is less distracting
+      const mobileScale = (isMobile ? 0.4 : 1.0) * visibilityScale;
+
       if (activeSlide === "projects") {
         if (isMobile) {
           // Decorative: bottom-center, smaller
@@ -335,7 +344,7 @@ export function BlueprintElements() {
           const [bx, by, bz] = LOADER_SPHERE_POINTS[idx];
           const [rx, ry, rz] = rotateYAxis(bx, by, bz, rotationY);
           const depth = (rz + 1) / 2;
-          const alpha = 0.15 * (0.2 + depth * 0.8) * loaderOpacityScale;
+          const alpha = 0.15 * (0.2 + depth * 0.8) * loaderOpacityScale * mobileScale;
           const screenX = cx + rx * radius;
           const screenY = cy - ry * radius;
           ctx.fillStyle = fg;
@@ -378,7 +387,7 @@ export function BlueprintElements() {
           const depthFactor = (rz + 1.3) / 2.6;
           const waveGlow = waveDisp * 0.8;
           const opacity =
-            (0.35 + opacityBoost + waveGlow) * (0.15 + Math.max(0, depthFactor) * 0.85) * sphereOpacityScale;
+            (0.35 + opacityBoost + waveGlow) * (0.15 + Math.max(0, depthFactor) * 0.85) * sphereOpacityScale * mobileScale;
 
           const waveSizeBoost = waveDisp * 4;
           const pointSize = basePixelSize + sizeBoost + waveSizeBoost;
@@ -424,7 +433,8 @@ export function BlueprintElements() {
             const opacity =
               (set.baseOpacity * easedT + opacityBoost + waveGlow) *
               (0.15 + Math.max(0, depthFactor) * 0.85) *
-              slideOpacityScale;
+              slideOpacityScale *
+              mobileScale;
 
             const waveSizeBoost = waveDisp * 4;
             const pointSize = set.size + waveSizeBoost;

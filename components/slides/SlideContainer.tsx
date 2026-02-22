@@ -211,6 +211,9 @@ export function SlideContainer() {
     let idleTimer: ReturnType<typeof setTimeout> | null = null;
 
     function onWheel(e: WheelEvent) {
+      // Notify globe & audio player of scroll activity (for mobile hide)
+      window.dispatchEvent(new Event("portfolio:scroll"));
+
       const currentEl = slideRefs.current[activeIndex];
       if (!currentEl) return;
 
@@ -260,6 +263,8 @@ export function SlideContainer() {
     function onTouchStart(e: TouchEvent) {
       const touch = e.touches[0];
       touchStartRef.current = { x: touch.clientX, y: touch.clientY, time: Date.now() };
+      // Notify globe & audio player of scroll activity
+      window.dispatchEvent(new Event("portfolio:scroll"));
     }
 
     function onTouchEnd(e: TouchEvent) {

@@ -1,0 +1,169 @@
+---
+title: "jeong_os: Writing a Kernel in Rust"
+date: "2026-02-21"
+description: "A weekend side project — building a minimal x86_64 operating system kernel from scratch in Rust, with VGA text output, serial diagnostics, and a custom test framework."
+tags: ["engineering"]
+banner: "/blog/jeong-os-banner.svg"
+---
+
+## The Impulse
+
+I've always been curious about what happens before your code runs — the space between power-on and `main()`. So on a Friday evening I opened Philipp Oppermann's [Writing an OS in Rust](https://os.phil-opp.com/) and started building.
+
+The result is [**jeong_os**](https://github.com/zeon-kun/jeong_os) — a minimal bare-metal kernel targeting x86_64, written entirely in Rust. No standard library. No operating system underneath. Just a binary that boots in QEMU and prints "Hello World!" in yellow text on a black screen.
+
+---
+
+## No Standard Library, No Safety Net
+
+The first thing you learn when writing a kernel is how much `std` does for you. `println!` needs an allocator. Panic handlers need a runtime. Even the entry point `main` is a lie — it's called by `crt0`, which is provided by your OS.
+
+A freestanding kernel starts with two attributes that strip all of that away:
+
+```rust
+#![no_std]
+#![no_main]
+```
+
+From here, you're responsible for everything. The entry point is a raw `extern "C"` function with `#[no_mangle]` so the linker can find it. The panic handler is a function you write yourself. There's no heap, no threads, no filesystem — just a flat memory space and hardware registers.
+
+---
+
+## Custom Target
+
+Rust's built-in targets assume an operating system exists. A kernel _is_ the operating system, so I needed a custom target specification:
+
+```json
+{
+    "llvm-target": "x86_64-unknown-none",
+    "os": "none",
+    "linker-flavor": "ld.lld",
+    "panic-strategy": "abort",
+    "disable-redzone": true,
+    "features": "-mmx,-sse,+soft-float"
+}
+```
+
+A few things worth noting:
+
+- **`panic-strategy: abort`** — No unwinding. When a kernel panics, there's nothing to unwind to.
+- **`disable-redzone`** — The red zone is a 128-byte area below the stack pointer that leaf functions can use without adjusting `rsp`. Hardware interrupts don't respect it, so a kernel must disable it or risk stack corruption.
+- **`-mmx,-sse,+soft-float`** — Disable SIMD instructions. The kernel would need to save/restore SIMD state on every interrupt otherwise, which is expensive for code that doesn't need it.
+
+---
+
+## VGA Text Mode
+
+The first visible milestone: writing characters to the screen. In text mode, the VGA buffer lives at physical address `0xb8000` — a 25-row by 80-column grid where each cell is 2 bytes: one for the ASCII character, one for the color.
+
+```rust
+pub struct Writer {
+    column_position: usize,
+    color_code: ColorCode,
+    buffer: &'static mut Buffer,
+}
+```
+
+The `Writer` tracks the current column, wraps on overflow, and scrolls by shifting all rows up when the screen fills. Each character write goes through `Volatile` to prevent the compiler from optimizing away writes to memory-mapped hardware.
+
+The color system is a 4-bit foreground + 4-bit background packed into a single byte:
+
+| Color       | Value |
+| :---------- | :---- |
+| Black       | 0     |
+| Blue        | 1     |
+| Green       | 2     |
+| Cyan        | 3     |
+| Red         | 4     |
+| Yellow      | 14    |
+| White       | 15    |
+
+Once the writer existed, I built `print!` and `println!` macros on top of it — same interface as standard Rust, but routing through the VGA buffer instead of stdout.
+
+### Global Writer with `lazy_static`
+
+The writer needs to be globally accessible (any part of the kernel might need to print), but Rust doesn't allow mutable statics without `unsafe`. The solution: `lazy_static` with a `spin::Mutex`.
+
+```rust
+lazy_static! {
+    pub static ref WRITER: Mutex<Writer> = Mutex::new(Writer {
+        column_position: 0,
+        color_code: ColorCode::new(Color::Yellow, Color::Black),
+        buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
+    });
+}
+```
+
+A spin mutex instead of `std::sync::Mutex` because there's no OS to provide blocking primitives. The lock just busy-waits — acceptable for a single-core kernel.
+
+---
+
+## Serial Port for Testing
+
+VGA output is visible in QEMU's graphical window, but for automated testing I needed machine-readable output. The UART 16550 serial port at I/O address `0x3F8` writes directly to QEMU's stdio when launched with `-serial stdio`.
+
+```rust
+lazy_static! {
+    pub static ref SERIAL1: Mutex<SerialPort> = {
+        let mut serial_port = unsafe { SerialPort::new(0x3F8) };
+        serial_port.init();
+        Mutex::new(serial_port)
+    };
+}
+```
+
+This gave me `serial_print!` and `serial_println!` — same pattern as the VGA macros, but output goes to the host terminal instead of the emulated screen.
+
+---
+
+## Custom Test Framework
+
+Rust's default test framework depends on `std`, so it's unavailable in `#![no_std]`. Instead, the kernel uses `#![feature(custom_test_frameworks)]` with a custom runner:
+
+```rust
+pub fn test_runner(tests: &[&dyn Testable]) {
+    serial_println!("Running {} tests", tests.len());
+    for test in tests {
+        test.run();
+    }
+    exit_qemu(QemuExitCode::Success);
+}
+```
+
+Each test function gets wrapped in a `Testable` trait that prints the fully-qualified function name before running and `[ok]` after. If a test panics, the panic handler prints `[failed]` to serial and exits QEMU with a failure code.
+
+The QEMU exit is done by writing to a special I/O port (`0xf4`) configured via `-device isa-debug-exit`:
+
+```rust
+pub fn exit_qemu(exit_code: QemuExitCode) {
+    use x86_64::instructions::port::Port;
+    unsafe {
+        let mut port = Port::new(0xf4);
+        port.write(exit_code as u32);
+    }
+}
+```
+
+The exit code mapping is intentionally offset (`Success = 0x10` maps to host exit code 33) so QEMU's own exit codes don't collide with test results.
+
+---
+
+## What I Learned
+
+**Rust is remarkably good at this.** The type system catches real bugs — buffer overflows, dangling references, race conditions — at compile time, even without `std`. The `repr(C)` and `repr(transparent)` attributes give exact control over memory layout, which matters when your "API" is a hardware specification.
+
+**The abstractions we take for granted are enormous.** `println!` in a normal Rust program is maybe 5 characters of thought. In a kernel, it's a VGA buffer driver, a global mutex, volatile memory writes, color encoding, line wrapping, and screen scrolling.
+
+**`unsafe` is a scalpel, not a sledgehammer.** The entire kernel has exactly 3 `unsafe` blocks: the VGA buffer pointer cast, the serial port initialization, and the QEMU exit port write. Everything else — including the test framework, color system, and print macros — is safe Rust.
+
+---
+
+## What's Next
+
+The "Bare Bones" section is done. The next chapters cover:
+
+- **CPU Exceptions** — IDT setup, breakpoint/double-fault handlers
+- **Hardware Interrupts** — PIC, keyboard input, timer
+- **Paging** — Virtual memory, page tables, heap allocation
+
+The repo is at [github.com/zeon-kun/jeong_os](https://github.com/zeon-kun/jeong_os).

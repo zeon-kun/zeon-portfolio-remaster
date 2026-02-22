@@ -11,9 +11,31 @@ export function AudioPlayer({ loaderVisible }: { loaderVisible?: boolean }) {
   const [playing, setPlaying] = useState(false);
   const [volume, setVolume] = useState(0.5);
   const [muted, setMuted] = useState(false);
+  const [scrollHidden, setScrollHidden] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const ctxRef = useRef<AudioContext | null>(null);
   const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
+
+  // Hide on scroll (mobile only)
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    function onScroll() {
+      // Check viewport width at event time (not just mount time)
+      if (window.innerWidth >= 768) return;
+      setScrollHidden(true);
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => setScrollHidden(false), 1000);
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("portfolio:scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("portfolio:scroll", onScroll);
+      if (timer) clearTimeout(timer);
+    };
+  }, []);
 
   // Create audio element once
   useEffect(() => {
@@ -119,7 +141,7 @@ export function AudioPlayer({ loaderVisible }: { loaderVisible?: boolean }) {
     <div
       className={`fixed bottom-20 right-4 md:bottom-8 md:right-8 z-50 flex items-center gap-3
         border border-foreground/10 bg-background/90 backdrop-blur-sm px-3 py-2
-        select-none transition-all duration-700 ease-out ${loaderVisible ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"}`}
+        select-none transition-all duration-700 ease-out ${loaderVisible ? "opacity-0 translate-y-4" : scrollHidden ? "opacity-0 translate-y-4 md:opacity-100 md:translate-y-0" : "opacity-100 translate-y-0"}`}
       role="region"
       aria-label="Audio player"
       onKeyDown={handleKeyDown}

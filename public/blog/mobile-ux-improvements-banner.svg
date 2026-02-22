@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
+  <rect width="1200" height="630" fill="#f5f0eb"/>
+  <!-- Grid lines -->
+  <line x1="96" y1="0" x2="96" y2="630" stroke="#1a1a1a" stroke-opacity="0.06" stroke-width="1"/>
+  <line x1="300" y1="0" x2="300" y2="630" stroke="#1a1a1a" stroke-opacity="0.06" stroke-width="1"/>
+  <line x1="600" y1="0" x2="600" y2="630" stroke="#1a1a1a" stroke-opacity="0.06" stroke-width="1"/>
+  <line x1="900" y1="0" x2="900" y2="630" stroke="#1a1a1a" stroke-opacity="0.06" stroke-width="1"/>
+  <line x1="1104" y1="0" x2="1104" y2="630" stroke="#1a1a1a" stroke-opacity="0.06" stroke-width="1"/>
+  <line x1="0" y1="76" x2="1200" y2="76" stroke="#1a1a1a" stroke-opacity="0.06" stroke-width="1"/>
+  <line x1="0" y1="239" x2="1200" y2="239" stroke="#1a1a1a" stroke-opacity="0.06" stroke-width="1"/>
+  <line x1="0" y1="454" x2="1200" y2="454" stroke="#1a1a1a" stroke-opacity="0.06" stroke-width="1"/>
+  <line x1="0" y1="554" x2="1200" y2="554" stroke="#1a1a1a" stroke-opacity="0.06" stroke-width="1"/>
+  <!-- Phone outline -->
+  <rect x="460" y="120" width="280" height="500" rx="20" stroke="#1a1a1a" stroke-opacity="0.15" stroke-width="2"/>
+  <rect x="460" y="120" width="280" height="500" rx="20" fill="#1a1a1a" fill-opacity="0.03"/>
+  <!-- Bottom nav bar -->
+  <rect x="460" y="540" width="280" height="80" rx="0 0 20 20" fill="#1a1a1a" fill-opacity="0.06"/>
+  <!-- Nav dots (5 items) -->
+  <circle cx="508" cy="575" r="6" fill="#6e6860" fill-opacity="0.5"/>
+  <circle cx="556" cy="575" r="6" fill="#6e6860" fill-opacity="0.5"/>
+  <circle cx="604" cy="575" r="6" fill="#6e6860" fill-opacity="0.5"/>
+  <circle cx="652" cy="575" r="6" fill="#6e6860" fill-opacity="0.5"/>
+  <circle cx="700" cy="575" r="6" fill="#a35b42"/>
+  <!-- Three dots (more icon) -->
+  <circle cx="694" cy="575" r="2" fill="#f5f0eb"/>
+  <circle cx="700" cy="575" r="2" fill="#f5f0eb"/>
+  <circle cx="706" cy="575" r="2" fill="#f5f0eb"/>
+  <!-- Globe wireframe (faded) -->
+  <circle cx="600" cy="340" r="80" stroke="#a35b42" stroke-opacity="0.15" stroke-width="1"/>
+  <ellipse cx="600" cy="340" rx="80" ry="30" stroke="#a35b42" stroke-opacity="0.1" stroke-width="1"/>
+  <ellipse cx="600" cy="340" rx="30" ry="80" stroke="#a35b42" stroke-opacity="0.1" stroke-width="1"/>
+  <!-- Toggle icon hint -->
+  <circle cx="600" cy="340" r="14" stroke="#a35b42" stroke-opacity="0.3" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <!-- Kanji label -->
+  <text x="96" y="560" font-family="sans-serif" font-weight="900" font-size="72" fill="#1a1a1a" fill-opacity="0.06">改善</text>
+</svg>

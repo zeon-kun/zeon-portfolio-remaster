@@ -21,6 +21,9 @@ export const globeState = {
   /** Whether to show planetarium view on projects slide */
   showPlanetarium: true,
 
+  /** Whether globe is visible (toggled via mobile navbar) */
+  globeVisible: true,
+
   /** Update phase and notify React subscribers */
   setPhase(p: GlobePhase) {
     this.phase = p;
@@ -37,7 +40,24 @@ export const globeState = {
     this.showPlanetarium = value;
     this.lastUpdate = Date.now(); // Trigger update
   },
+
+  toggleGlobeVisible() {
+    this.globeVisible = !this.globeVisible;
+    listeners.forEach((l) => l());
+  },
 };
+
+/** React hook — re-renders when globe visibility changes */
+export function useGlobeVisible(): boolean {
+  return useSyncExternalStore(
+    (cb) => {
+      listeners.add(cb);
+      return () => listeners.delete(cb);
+    },
+    () => globeState.globeVisible,
+    () => true // server snapshot
+  );
+}
 
 /** React hook — re-renders when phase changes */
 export function useGlobePhase(): GlobePhase {

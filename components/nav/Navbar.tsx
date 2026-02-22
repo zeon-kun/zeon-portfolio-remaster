@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { Home, User, Briefcase, FolderGit, Linkedin, Github, Mail, GitCommitHorizontal, BookOpen } from "lucide-react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { Home, User, Briefcase, FolderGit, Linkedin, Github, Mail, GitCommitHorizontal, BookOpen, MoreHorizontal, Globe } from "lucide-react";
 import type { SlideId } from "@/components/slides/SlideContainer";
 import { useLang, langState } from "@/lib/language";
+import { globeState, useGlobeVisible } from "@/lib/globe-state";
 import { usePathname } from "next/navigation";
 import { TransitionLink } from "@/components/layout/TransitionLink";
 
@@ -53,9 +54,26 @@ export function Navbar(props: NavbarProps) {
   const mode = props.mode ?? "slides";
   const lang = useLang();
   const pathname = usePathname();
+  const globeVisible = useGlobeVisible();
   const [hoveredNav, setHoveredNav] = useState<string | null>(null);
   const [hoveredSocial, setHoveredSocial] = useState<string | null>(null);
   const [hoveredCta, setHoveredCta] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const moreRef = useRef<HTMLDivElement>(null);
+
+  // Close "more" popup on outside click
+  useEffect(() => {
+    if (!moreOpen) return;
+    function handleClick(e: MouseEvent) {
+      if (moreRef.current && !moreRef.current.contains(e.target as Node)) {
+        setMoreOpen(false);
+      }
+    }
+    document.addEventListener("click", handleClick);
+    return () => document.removeEventListener("click", handleClick);
+  }, [moreOpen]);
+
+  const closeMore = useCallback(() => setMoreOpen(false), []);
 
   const isRouteMode = mode === "routes";
   const activeSlide = isRouteMode ? undefined : props.activeSlide;
@@ -217,8 +235,17 @@ export function Navbar(props: NavbarProps) {
             </div>
           </div>
 
-          {/* Right group - Lang toggle + Social + CTA */}
+          {/* Right group - Globe toggle + Lang toggle + Social + CTA */}
           <div className="flex items-center gap-4">
+            {/* Globe visibility toggle */}
+            <button
+              onClick={() => globeState.toggleGlobeVisible()}
+              aria-label={globeVisible ? "Hide globe" : "Show globe"}
+              className={`p-1.5 border border-foreground/15 transition-all duration-200 ${globeVisible ? "text-accent-primary border-accent-primary/30" : "text-muted hover:text-foreground hover:border-foreground/30"}`}
+            >
+              <Globe size={14} />
+            </button>
+
             {/* Language toggle */}
             <button
               onClick={() => langState.toggle()}
@@ -320,6 +347,14 @@ export function Navbar(props: NavbarProps) {
 
         <div className="flex items-center gap-3">
           <button
+            onClick={() => globeState.toggleGlobeVisible()}
+            aria-label={globeVisible ? "Hide globe" : "Show globe"}
+            className={`p-1.5 border border-foreground/15 transition-colors duration-150 ${globeVisible ? "text-accent-primary" : "text-muted"}`}
+          >
+            <Globe size={14} />
+          </button>
+
+          <button
             onClick={() => langState.toggle()}
             className="px-2.5 py-1.5 text-[9px] font-mono font-bold uppercase tracking-widest border border-foreground/15 text-muted"
           >
@@ -344,7 +379,7 @@ export function Navbar(props: NavbarProps) {
         aria-label="Section navigation"
       >
         <div className="flex items-center justify-around px-4 py-2">
-          {/* Slide nav items */}
+          {/* Slide nav items (4) */}
           {NAV_LINKS.map((link) => {
             const Icon = link.icon;
             const isActive = !isRouteMode && activeSlide === link.id;
@@ -382,41 +417,61 @@ export function Navbar(props: NavbarProps) {
             );
           })}
 
-          {/* Route links in mobile bar */}
-          {ROUTE_LINKS.map((link) => {
-            const Icon = link.icon;
-            const isActive = isRouteMode && pathname.startsWith(link.href);
-            const mobileLabel = lang === "jp" ? link.label : link.translation.toUpperCase();
+          {/* More button */}
+          <div ref={moreRef} className="relative">
+            <button
+              onClick={() => setMoreOpen((v) => !v)}
+              aria-label="More"
+              aria-expanded={moreOpen}
+              className={`flex flex-col items-center gap-1 px-3 py-1.5 transition-colors duration-150 ${moreOpen ? "text-accent-primary" : "text-muted"}`}
+            >
+              <MoreHorizontal size={18} strokeWidth={1.5} />
+              <span className="text-[8px] font-mono uppercase tracking-wider">
+                {lang === "jp" ? "その他" : "MORE"}
+              </span>
+            </button>
 
-            return (
-              <TransitionLink
-                key={link.href}
-                href={link.href}
-                aria-label={link.translation}
-                className={`flex flex-col items-center gap-1 px-3 py-1.5 transition-colors duration-150 ${isActive ? "text-accent-primary" : "text-muted"}`}
-              >
-                <Icon size={18} strokeWidth={isActive ? 2.5 : 1.5} />
-                <span className="text-[8px] font-mono uppercase tracking-wider">{mobileLabel}</span>
-              </TransitionLink>
-            );
-          })}
+            {/* More popup */}
+            {moreOpen && (
+              <div className="absolute bottom-full mb-2 right-0 min-w-[160px] z-[60] border border-foreground/10 bg-background/90 backdrop-blur-md py-1">
+                {ROUTE_LINKS.map((link) => {
+                  const Icon = link.icon;
+                  const isActive = isRouteMode && pathname.startsWith(link.href);
+                  return (
+                    <TransitionLink
+                      key={link.href}
+                      href={link.href}
+                      onClick={closeMore}
+                      className={`flex items-center gap-3 px-4 py-2.5 text-xs font-bold tracking-wider transition-colors duration-150 ${isActive ? "text-accent-primary" : "text-muted hover:text-foreground hover:bg-foreground/5"}`}
+                    >
+                      <Icon size={16} strokeWidth={1.5} />
+                      <span className={lang === "jp" ? "font-jp" : "font-mono"}>
+                        {lang === "jp" ? link.label : link.translation.toUpperCase()}
+                      </span>
+                    </TransitionLink>
+                  );
+                })}
 
-          {/* Social links in mobile bar */}
-          {SOCIAL_LINKS.map((link) => {
-            const Icon = link.icon;
-            return (
-              <a
-                key={link.label}
-                href={link.href}
-                {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                aria-label={link.translation}
-                className="flex flex-col items-center gap-1 px-3 py-1.5 text-muted transition-colors duration-150"
-              >
-                <Icon size={18} strokeWidth={1.5} />
-                <span className="text-[8px] font-mono uppercase tracking-wider">{link.translation}</span>
-              </a>
-            );
-          })}
+                <div className="h-px bg-foreground/8 my-1" />
+
+                {SOCIAL_LINKS.map((link) => {
+                  const Icon = link.icon;
+                  return (
+                    <a
+                      key={link.label}
+                      href={link.href}
+                      {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                      onClick={closeMore}
+                      className="flex items-center gap-3 px-4 py-2.5 text-xs font-bold tracking-wider text-muted hover:text-foreground hover:bg-foreground/5 transition-colors duration-150"
+                    >
+                      <Icon size={16} strokeWidth={1.5} />
+                      <span className="font-mono">{link.translation.toUpperCase()}</span>
+                    </a>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
       </nav>
     </>
