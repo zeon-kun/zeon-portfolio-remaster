@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { CopyAddress } from "@/components/payme/CopyAddress";
 import { QrisCard } from "@/components/payme/QrisCard";
+import { CryptoTicker } from "@/components/market/CryptoTicker";
 // import { SphereDecoration } from "@/components/payme/SphereDecoration";
 
 export const metadata: Metadata = {
@@ -85,8 +86,11 @@ export default function PayMePage() {
           </div>
         </div>
 
+        {/* Market pulse ticker */}
+        <CryptoTicker />
+
         {/* Bottom annotation */}
-        <p className="mt-10 text-[10px] font-mono text-muted/35 uppercase tracking-[0.2em] text-center">
+        <p className="mt-8 text-[10px] font-mono text-muted/35 uppercase tracking-[0.2em] text-center">
           Direct transfer - dm me if you already paid.
         </p>
       </div>
