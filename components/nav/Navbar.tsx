@@ -348,7 +348,7 @@ export function Navbar(props: NavbarProps) {
 
       {/* ─── Mobile top bar (logo + CTA only) ─── */}
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 px-6 py-4 flex md:hidden items-center justify-between transition-all duration-700 ease-out ${loaderVisible ? "opacity-0 blur-sm" : "opacity-100 blur-0"}`}
+        className={`fixed top-0 left-0 right-0 z-50 px-6 py-4 flex md:hidden items-center justify-between bg-background/60 backdrop-blur-md border-b border-foreground/8 transition-all duration-700 ease-out ${loaderVisible ? "opacity-0 blur-sm" : "opacity-100 blur-0"}`}
       >
         {isRouteMode ? (
           <TransitionLink

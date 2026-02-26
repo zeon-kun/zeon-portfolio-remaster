@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useCallback } from "react";
+import { useRef, useEffect } from "react";
 import gsap from "gsap";
 import { prefersReducedMotion } from "@/lib/motion";
 import { WORK_EXPERIENCE, ORGANIZATIONS } from "@/lib/content";
@@ -28,72 +28,6 @@ export function ExperienceSlide({ isActive }: { isActive: boolean }) {
     });
   }, [isActive, reduced]);
 
-  const handleMouseEnter = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      if (reduced) return;
-      const highlights = e.currentTarget.querySelector("[data-highlights]") as HTMLElement | null;
-      if (!highlights) return;
-      gsap.killTweensOf(highlights);
-      gsap.to(highlights, {
-        height: "auto",
-        opacity: 1,
-        duration: 0.35,
-        ease: "power2.out",
-      });
-    },
-    [reduced],
-  );
-
-  const handleMouseLeave = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      if (reduced) return;
-      const highlights = e.currentTarget.querySelector("[data-highlights]") as HTMLElement | null;
-      if (!highlights) return;
-      gsap.killTweensOf(highlights);
-      gsap.to(highlights, {
-        height: 0,
-        opacity: 0,
-        duration: 0.25,
-        ease: "power2.in",
-      });
-    },
-    [reduced],
-  );
-
-  const handleFocus = useCallback(
-    (e: React.FocusEvent<HTMLDivElement>) => {
-      if (reduced) return;
-      const highlights = e.currentTarget.querySelector("[data-highlights]") as HTMLElement | null;
-      if (!highlights) return;
-      gsap.killTweensOf(highlights);
-      gsap.to(highlights, {
-        height: "auto",
-        opacity: 1,
-        duration: 0.35,
-        ease: "power2.out",
-      });
-    },
-    [reduced],
-  );
-
-  const handleBlur = useCallback(
-    (e: React.FocusEvent<HTMLDivElement>) => {
-      if (reduced) return;
-      // Don't collapse if focus moved within the same entry
-      if (e.currentTarget.contains(e.relatedTarget as Node)) return;
-      const highlights = e.currentTarget.querySelector("[data-highlights]") as HTMLElement | null;
-      if (!highlights) return;
-      gsap.killTweensOf(highlights);
-      gsap.to(highlights, {
-        height: 0,
-        opacity: 0,
-        duration: 0.25,
-        ease: "power2.in",
-      });
-    },
-    [reduced],
-  );
-
   return (
     <>
       <section
@@ -119,15 +53,10 @@ export function ExperienceSlide({ isActive }: { isActive: boolean }) {
               <div
                 key={entry.company}
                 data-exp-entry
-                tabIndex={0}
-                className="border-l-2 pl-6 relative cursor-pointer group"
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
+                className="border-l-2 pl-6 relative"
               >
                 <p className="text-xs font-mono text-muted tracking-wider">{entry.period}</p>
-                <h3 className="text-lg font-bold mt-1 group-hover:text-accent-primary transition-colors duration-200">
+                <h3 className="text-lg font-bold mt-1">
                   {entry.company}
                 </h3>
                 <p className="text-sm text-foreground/60 mt-0.5">
@@ -135,12 +64,7 @@ export function ExperienceSlide({ isActive }: { isActive: boolean }) {
                 </p>
                 <p className="text-xs text-foreground/50 mt-2 italic">{entry.description}</p>
 
-                {/* Highlights — collapsed by default, expanded on hover/focus */}
-                <ul
-                  data-highlights
-                  className="mt-3 space-y-2 overflow-hidden"
-                  style={reduced ? undefined : { height: 0, opacity: 0 }}
-                >
+                <ul className="mt-3 space-y-2">
                   {entry.highlights.map((h, i) => (
                     <li key={i} className="text-xs text-foreground/60 leading-relaxed pl-4 relative">
                       <span className="absolute left-0 text-accent-primary">&rarr;</span>

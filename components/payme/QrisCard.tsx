@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Download, Maximize2, X, Mail } from "lucide-react";
+import Image from "next/image";
 
 const RECEIPT_MAILTO = [
   "mailto:rafif.zeon@gmail.com",
@@ -36,8 +37,16 @@ export function QrisCard() {
         {/* QR image */}
         <div className="flex justify-center">
           <div className="relative border-2 border-dashed border-foreground/15 aspect-square w-full max-w-[200px]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/qris.png" alt="QRIS payment code" className="w-full h-full object-contain" />
+            <Image
+              src="/qris.png"
+              alt="QRIS payment code"
+              fill
+              sizes="200px"
+              className="object-contain"
+              priority
+              placeholder="blur"
+              blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+            />
             <span className="absolute top-1 left-1 w-2 h-2 border-t border-l border-foreground/20" />
             <span className="absolute top-1 right-1 w-2 h-2 border-t border-r border-foreground/20" />
             <span className="absolute bottom-1 left-1 w-2 h-2 border-b border-l border-foreground/20" />
@@ -101,8 +110,13 @@ export function QrisCard() {
 
             {/* Large QR */}
             <div className="relative border-2 border-dashed border-foreground/20 w-64 h-64 md:w-80 md:h-80">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/qris.png" alt="QRIS payment code — enlarged" className="w-full h-full object-contain" />
+              <Image
+                src="/qris.png"
+                alt="QRIS payment code — enlarged"
+                fill
+                sizes="(max-width: 768px) 256px, 320px"
+                className="object-contain"
+              />
               <span className="absolute top-2 left-2 w-5 h-5 border-t-2 border-l-2 border-foreground/30" />
               <span className="absolute top-2 right-2 w-5 h-5 border-t-2 border-r-2 border-foreground/30" />
               <span className="absolute bottom-2 left-2 w-5 h-5 border-b-2 border-l-2 border-foreground/30" />
