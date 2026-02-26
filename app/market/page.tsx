@@ -2,8 +2,10 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import { RefreshCw, AlertTriangle } from "lucide-react";
-import { COIN_IDS, COIN_META, PriceMap, formatPrice, formatChange } from "@/lib/crypto";
-import type { CoinId } from "@/lib/crypto";
+import { COIN_IDS, COIN_META, PriceMap, formatPrice, formatChange, formatCompact } from "@/lib/crypto";
+import type { CoinId, PriceData } from "@/lib/crypto";
+import { GlobalMarketBar } from "@/components/market/GlobalMarketBar";
+import { TrendingCoins } from "@/components/market/TrendingCoins";
 
 export const dynamic = "force-static";
 
@@ -26,6 +28,143 @@ async function fetchPrices(): Promise<FetchResult> {
   }
 }
 
+// ── Sparkline ──────────────────────────────────────────────────────────────
+function Sparkline({ prices, positive }: { prices: number[]; positive: boolean }) {
+  if (!prices || prices.length < 2) return null;
+
+  // Downsample ~168 hourly points → ~56 for clean rendering
+  const step = Math.max(1, Math.floor(prices.length / 56));
+  const pts = prices.filter((_, i) => i % step === 0);
+
+  const min = Math.min(...pts);
+  const max = Math.max(...pts);
+  const range = max - min || 1;
+  const W = 100, H = 28;
+
+  const points = pts
+    .map((p, i) => {
+      const x = ((i / (pts.length - 1)) * W).toFixed(1);
+      const y = (H - ((p - min) / range) * H).toFixed(1);
+      return `${x},${y}`;
+    })
+    .join(" ");
+
+  return (
+    <svg
+      viewBox={`0 0 ${W} ${H}`}
+      preserveAspectRatio="none"
+      className="w-full h-7 overflow-visible"
+      aria-hidden="true"
+    >
+      <polyline
+        points={points}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        vectorEffect="non-scaling-stroke"
+        className={positive ? "text-accent-primary/50" : "text-muted/30"}
+      />
+    </svg>
+  );
+}
+
+// ── Coin card ──────────────────────────────────────────────────────────────
+function CoinCard({ id, idx, data, loading }: {
+  id: CoinId;
+  idx: number;
+  data: PriceData | undefined;
+  loading: boolean;
+}) {
+  const meta = COIN_META[id];
+  const isPos = data ? data.usd_24h_change >= 0 : null;
+  const padIdx = String(idx + 1).padStart(2, "0");
+
+  return (
+    <div className="relative border border-foreground/8 bg-background/40 backdrop-blur-sm p-4 md:p-5 space-y-3 hover:border-foreground/15 transition-colors duration-200">
+      {/* Top row: index + rank + change badge */}
+      <div className="flex items-start justify-between">
+        <div className="flex items-center gap-2">
+          <span className="text-[9px] font-mono text-muted/30 tracking-widest">{padIdx}</span>
+          {data?.market_cap_rank ? (
+            <span className="text-[9px] font-mono text-muted/25 tracking-wider">
+              #{data.market_cap_rank}
+            </span>
+          ) : null}
+        </div>
+        {data ? (
+          <span className={`text-[9px] font-mono font-bold tracking-wider px-1.5 py-0.5 border ${
+            isPos
+              ? "text-accent-primary border-accent-primary/20 bg-accent-primary/5"
+              : "text-muted/60 border-foreground/8"
+          }`}>
+            {formatChange(data.usd_24h_change)}
+          </span>
+        ) : (
+          <span className="text-[9px] font-mono text-muted/20 border border-foreground/5 px-1.5 py-0.5">
+            — %
+          </span>
+        )}
+      </div>
+
+      {/* Price */}
+      <div>
+        {loading && !data ? (
+          <div className="h-7 flex items-center">
+            <span className="text-[10px] font-mono text-muted/20 tracking-wider">loading...</span>
+          </div>
+        ) : data ? (
+          <p className="text-xl md:text-2xl font-mono font-bold text-foreground leading-none tracking-tight">
+            {formatPrice(data.usd)}
+          </p>
+        ) : (
+          <p className="text-xl md:text-2xl font-mono font-bold text-foreground/20 leading-none">—</p>
+        )}
+      </div>
+
+      {/* Sparkline */}
+      {data?.sparkline?.length ? (
+        <Sparkline prices={data.sparkline} positive={isPos ?? true} />
+      ) : (
+        <div className="h-7" />
+      )}
+
+      {/* Coin identity */}
+      <div className="border-t border-foreground/6 pt-3 space-y-1.5">
+        <div className="flex items-baseline gap-2">
+          <span className="text-xs font-black tracking-widest text-foreground/70">{meta.symbol}</span>
+          <span className="text-[10px] font-mono text-muted/40 uppercase tracking-wide">{meta.name}</span>
+        </div>
+        {/* Market cap + volume */}
+        {data ? (
+          <div className="flex items-center gap-3">
+            <div>
+              <span className="text-[8px] font-mono text-muted/25 uppercase tracking-wider block">MCap</span>
+              <span className="text-[9px] font-mono text-muted/50">{formatCompact(data.market_cap)}</span>
+            </div>
+            <div>
+              <span className="text-[8px] font-mono text-muted/25 uppercase tracking-wider block">Vol</span>
+              <span className="text-[9px] font-mono text-muted/50">{formatCompact(data.total_volume)}</span>
+            </div>
+            {data.ath > 0 && (
+              <div className="ml-auto text-right">
+                <span className="text-[8px] font-mono text-muted/25 uppercase tracking-wider block">ATH</span>
+                <span className={`text-[9px] font-mono ${data.ath_change_percentage >= -5 ? "text-accent-primary/70" : "text-muted/40"}`}>
+                  {formatChange(data.ath_change_percentage)}
+                </span>
+              </div>
+            )}
+          </div>
+        ) : null}
+      </div>
+
+      <span className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-foreground/8" />
+    </div>
+  );
+}
+
+// ── Page ───────────────────────────────────────────────────────────────────
 export default function MarketPage() {
   const [prices, setPrices] = useState<PriceMap>({});
   const [loading, setLoading] = useState(true);
@@ -58,7 +197,6 @@ export default function MarketPage() {
     } else if (result.rateLimited) {
       setRateLimited(true);
       startCountdown(result.retryAfter);
-      // keep existing prices — stale data is better than blank
     }
     setLoading(false);
     setRefreshing(false);
@@ -80,7 +218,7 @@ export default function MarketPage() {
       <div className="max-w-5xl mx-auto">
 
         {/* ── Page header ── */}
-        <header className="mb-12 relative">
+        <header className="mb-8 relative">
           <span aria-hidden="true" className="absolute -left-5 md:-left-8 top-0 writing-vertical text-[10px] font-mono text-foreground/10 tracking-widest select-none">
             相場
           </span>
@@ -115,6 +253,9 @@ export default function MarketPage() {
           </div>
         </header>
 
+        {/* ── Global market bar ── */}
+        <GlobalMarketBar />
+
         {/* ── Rate limit banner ── */}
         {rateLimited && (
           <div className="flex items-center gap-3 border border-foreground/8 bg-foreground/3 px-4 py-3 mb-6">
@@ -135,61 +276,19 @@ export default function MarketPage() {
 
         {/* ── Coin grid ── */}
         <div className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 transition-opacity duration-500 ${rateLimited && hasData ? "opacity-50" : "opacity-100"}`}>
-          {COIN_IDS.map((id: CoinId, idx) => {
-            const meta = COIN_META[id];
-            const data = prices[id];
-            const isPos = data ? data.usd_24h_change >= 0 : null;
-            const padIdx = String(idx + 1).padStart(2, "0");
-
-            return (
-              <div
-                key={id}
-                className="relative border border-foreground/8 bg-background/40 backdrop-blur-sm p-4 md:p-5 space-y-3 hover:border-foreground/15 transition-colors duration-200"
-              >
-                {/* Top row: index + change badge */}
-                <div className="flex items-start justify-between">
-                  <span className="text-[9px] font-mono text-muted/30 tracking-widest">{padIdx}</span>
-                  {data ? (
-                    <span className={`text-[9px] font-mono font-bold tracking-wider px-1.5 py-0.5 border ${
-                      isPos
-                        ? "text-accent-primary border-accent-primary/20 bg-accent-primary/5"
-                        : "text-muted/60 border-foreground/8"
-                    }`}>
-                      {formatChange(data.usd_24h_change)}
-                    </span>
-                  ) : (
-                    <span className="text-[9px] font-mono text-muted/20 border border-foreground/5 px-1.5 py-0.5">
-                      — %
-                    </span>
-                  )}
-                </div>
-
-                {/* Price — hero number */}
-                <div>
-                  {loading && !data ? (
-                    <div className="h-7 flex items-center">
-                      <span className="text-[10px] font-mono text-muted/20 tracking-wider">loading...</span>
-                    </div>
-                  ) : data ? (
-                    <p className="text-xl md:text-2xl font-mono font-bold text-foreground leading-none tracking-tight">
-                      {formatPrice(data.usd)}
-                    </p>
-                  ) : (
-                    <p className="text-xl md:text-2xl font-mono font-bold text-foreground/20 leading-none">—</p>
-                  )}
-                </div>
-
-                {/* Coin identity */}
-                <div className="flex items-baseline gap-2 border-t border-foreground/6 pt-3">
-                  <span className="text-xs font-black tracking-widest text-foreground/70">{meta.symbol}</span>
-                  <span className="text-[10px] font-mono text-muted/40 uppercase tracking-wide">{meta.name}</span>
-                </div>
-
-                <span className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-foreground/8" />
-              </div>
-            );
-          })}
+          {COIN_IDS.map((id: CoinId, idx) => (
+            <CoinCard
+              key={id}
+              id={id}
+              idx={idx}
+              data={prices[id]}
+              loading={loading}
+            />
+          ))}
         </div>
+
+        {/* ── Trending ── */}
+        <TrendingCoins />
 
         {/* ── Footer ── */}
         <p className="mt-10 text-[10px] font-mono text-muted/30 uppercase tracking-[0.2em] text-center">
