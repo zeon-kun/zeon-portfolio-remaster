@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Home, User, Briefcase, FolderGit, Linkedin, Github, Mail, GitCommitHorizontal, BookOpen, MoreHorizontal, Globe } from "lucide-react";
+import { Home, User, Briefcase, FolderGit, Linkedin, Github, Mail, GitCommitHorizontal, BookOpen, MoreHorizontal, Globe, ChevronDown, Wallet } from "lucide-react";
 import type { SlideId } from "@/components/slides/SlideContainer";
 import { useLang, langState } from "@/lib/language";
 import { globeState, useGlobeVisible } from "@/lib/globe-state";
@@ -18,6 +18,7 @@ const NAV_LINKS = [
 const ROUTE_LINKS = [
   { href: "/changelog", label: "変更履歴", icon: GitCommitHorizontal, translation: "Changelog" },
   { href: "/blog", label: "ブログ", icon: BookOpen, translation: "Blog" },
+  { href: "/payme", label: "支払い", icon: Wallet, translation: "Pay Me" },
 ] as const;
 
 const SOCIAL_LINKS = [
@@ -60,8 +61,10 @@ export function Navbar(props: NavbarProps) {
   const [hoveredCta, setHoveredCta] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const moreRef = useRef<HTMLDivElement>(null);
+  const [desktopMoreOpen, setDesktopMoreOpen] = useState(false);
+  const desktopMoreRef = useRef<HTMLDivElement>(null);
 
-  // Close "more" popup on outside click
+  // Close mobile "more" popup on outside click
   useEffect(() => {
     if (!moreOpen) return;
     function handleClick(e: MouseEvent) {
@@ -73,7 +76,20 @@ export function Navbar(props: NavbarProps) {
     return () => document.removeEventListener("click", handleClick);
   }, [moreOpen]);
 
+  // Close desktop "more" dropdown on outside click
+  useEffect(() => {
+    if (!desktopMoreOpen) return;
+    function handleClick(e: MouseEvent) {
+      if (desktopMoreRef.current && !desktopMoreRef.current.contains(e.target as Node)) {
+        setDesktopMoreOpen(false);
+      }
+    }
+    document.addEventListener("click", handleClick);
+    return () => document.removeEventListener("click", handleClick);
+  }, [desktopMoreOpen]);
+
   const closeMore = useCallback(() => setMoreOpen(false), []);
+  const closeDesktopMore = useCallback(() => setDesktopMoreOpen(false), []);
 
   const isRouteMode = mode === "routes";
   const activeSlide = isRouteMode ? undefined : props.activeSlide;
@@ -184,54 +200,60 @@ export function Navbar(props: NavbarProps) {
               {/* Divider between slide links and route links */}
               <div className="w-[2px] h-5 bg-foreground/30 mx-1" />
 
-              {/* Route links (changelog, blog) */}
-              {ROUTE_LINKS.map((link) => {
-                const Icon = link.icon;
-                const isActive = isRouteMode && pathname.startsWith(link.href);
-                const isHovered = hoveredNav === link.label;
-                const displayLabel = lang === "jp" ? link.label : link.translation.toUpperCase();
+              {/* Desktop MORE dropdown */}
+              <div ref={desktopMoreRef} className="relative">
+                <button
+                  onClick={() => setDesktopMoreOpen((v) => !v)}
+                  aria-expanded={desktopMoreOpen}
+                  className={`flex items-center gap-1.5 px-4 py-2 text-xs font-bold tracking-wider transition-colors duration-150 ease-out ${
+                    desktopMoreOpen
+                      ? "text-foreground bg-foreground/5"
+                      : "text-muted hover:text-foreground hover:bg-foreground/5"
+                  }`}
+                >
+                  <span className={lang === "jp" ? "font-jp" : "font-mono"}>
+                    {lang === "jp" ? "その他" : "MORE"}
+                  </span>
+                  <ChevronDown
+                    size={12}
+                    className={`transition-transform duration-200 ${desktopMoreOpen ? "rotate-180" : ""}`}
+                  />
+                </button>
 
-                return (
-                  <TransitionLink
-                    key={link.href}
-                    href={link.href}
-                    onMouseEnter={() => setHoveredNav(link.label)}
-                    onMouseLeave={() => setHoveredNav(null)}
-                    aria-current={isActive ? "page" : undefined}
-                    className={`
-                      relative flex items-center gap-2 px-4 py-2
-                      text-xs font-bold tracking-wider
-                      transition-colors duration-150 ease-out
-                      ${
-                        isActive
-                          ? "bg-accent-primary text-background"
-                          : "text-muted hover:text-foreground hover:bg-foreground/5"
-                      }
-                    `}
-                  >
-                    <Icon size={14} className={isActive ? "opacity-100" : "opacity-70"} />
-                    <span className={lang === "jp" ? "font-jp" : "font-mono"}>{displayLabel}</span>
-
-                    {lang === "jp" && (
-                      <span
-                        className={`
-                          absolute left-1/2 -translate-x-1/2 top-full mt-2
-                          px-2 py-1
-                          text-[10px] font-mono font-normal tracking-wider uppercase
-                          bg-foreground text-background
-                          whitespace-nowrap
-                          transition-all duration-200
-                          pointer-events-none z-50
-                          ${isHovered ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-1"}
-                        `}
+                {/* Animated dropdown */}
+                <div
+                  className={`
+                    absolute top-full right-0 mt-2 min-w-[160px] z-[60]
+                    border border-foreground/10 bg-background/95 backdrop-blur-md py-1
+                    transition-all duration-200 ease-out origin-top-right
+                    ${desktopMoreOpen
+                      ? "opacity-100 translate-y-0 scale-100 pointer-events-auto"
+                      : "opacity-0 -translate-y-2 scale-95 pointer-events-none"}
+                  `}
+                >
+                  {ROUTE_LINKS.map((link) => {
+                    const Icon = link.icon;
+                    const isActive = isRouteMode && pathname.startsWith(link.href);
+                    return (
+                      <TransitionLink
+                        key={link.href}
+                        href={link.href}
+                        onClick={closeDesktopMore}
+                        className={`flex items-center gap-3 px-4 py-2.5 text-xs font-bold tracking-wider transition-colors duration-150 ${
+                          isActive
+                            ? "text-accent-primary bg-accent-primary/5"
+                            : "text-muted hover:text-foreground hover:bg-foreground/5"
+                        }`}
                       >
-                        {link.translation}
-                        <span className="absolute left-1/2 -translate-x-1/2 -top-1 w-2 h-2 bg-foreground rotate-45" />
-                      </span>
-                    )}
-                  </TransitionLink>
-                );
-              })}
+                        <Icon size={14} strokeWidth={1.5} />
+                        <span className={lang === "jp" ? "font-jp" : "font-mono"}>
+                          {lang === "jp" ? link.label : link.translation.toUpperCase()}
+                        </span>
+                      </TransitionLink>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           </div>
 
