@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Home, User, Briefcase, FolderGit, Linkedin, Github, Mail, GitCommitHorizontal, BookOpen, MoreHorizontal, Globe, ChevronDown, Wallet, TrendingUp } from "lucide-react";
+import { Home, User, Briefcase, FolderGit, Linkedin, Github, Mail, GitCommitHorizontal, BookOpen, MoreHorizontal, Globe, ChevronDown, Wallet, TrendingUp, BookMarked } from "lucide-react";
 import type { SlideId } from "@/components/slides/SlideContainer";
 import { useLang, langState } from "@/lib/language";
 import { globeState, useGlobeVisible } from "@/lib/globe-state";
@@ -20,6 +20,7 @@ const ROUTE_LINKS = [
   { href: "/blog", label: "ブログ", icon: BookOpen, translation: "Blog" },
   { href: "/payme", label: "支払い", icon: Wallet, translation: "Pay Me" },
   { href: "/market", label: "市場", icon: TrendingUp, translation: "Market" },
+  { href: "/pokedex", label: "図鑑", icon: BookMarked, translation: "Pokédex" },
 ] as const;
 
 const SOCIAL_LINKS = [
