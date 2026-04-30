@@ -14,6 +14,8 @@ import { ProjectsSlide } from "./ProjectsSlide";
 import { BlueprintElements } from "../geometric/GlobeBlueprint";
 import { GestureHint } from "./GestureHint";
 import { AudioPlayer } from "../audio/AudioPlayer";
+import { CvDownloadButton } from "../layout/CvDownloadButton";
+import { ThankYouOverlay } from "../layout/ThankYouOverlay";
 import { useGlobePhase, globeState } from "@/lib/globe-state";
 import { useTransitionPhase } from "@/lib/transition";
 
@@ -27,6 +29,13 @@ export function SlideContainer() {
   const transitionPhase = useTransitionPhase();
   const isLoaderVisible = globePhase !== "ready" || transitionPhase === "exiting";
   const [activeIndex, setActiveIndex] = useState(0);
+  const [showThanks, setShowThanks] = useState(false);
+
+  const handleCvDownload = useCallback(() => {
+    setShowThanks(true);
+    // Hold visible for ~1.4s after enter completes, then trigger 1s exit
+    setTimeout(() => setShowThanks(false), 2400);
+  }, []);
 
   const isTransitioning = useRef(false);
   const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -318,6 +327,8 @@ export function SlideContainer() {
       <BlueprintElements />
       <Navbar activeSlide={SLIDES[activeIndex]} onNavigate={handleNavigate} loaderVisible={isLoaderVisible} />
       <AudioPlayer loaderVisible={isLoaderVisible} />
+      <CvDownloadButton loaderVisible={isLoaderVisible} onDownload={handleCvDownload} />
+      <ThankYouOverlay show={showThanks} />
       <GestureHint />
 
       <div ref={liveRegionRef} role="status" aria-live="polite" aria-atomic="true" className="sr-only" />

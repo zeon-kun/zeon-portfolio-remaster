@@ -44,6 +44,9 @@ export function AboutSlide({ isActive }: { isActive: boolean }) {
             >
               私について
             </h2>
+            <p className="mt-4 text-xs font-mono text-foreground/60 uppercase tracking-[0.3em]">
+              {PERSONAL_INFO.name}
+            </p>
           </div>
 
           {/* Intro */}
