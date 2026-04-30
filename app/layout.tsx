@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist_Mono, Noto_Sans_JP, Instrument_Serif, Outfit, Geist } from "next/font/google";
 import "./globals.css";
 import { PageLoader } from "./loader";
+import { PERSONAL_INFO, SKILLS, CERTIFICATIONS } from "@/lib/content";
 
 const notoSansJP = Noto_Sans_JP({
   variable: "--font-noto-jp",
@@ -25,9 +26,46 @@ const headingFont = Geist({
   display: "swap",
 });
 
+const seoTitle = `${PERSONAL_INFO.name} | ${PERSONAL_INFO.title}`;
+const seoDescription = PERSONAL_INFO.summary;
+const seoKeywords = [
+  PERSONAL_INFO.name,
+  PERSONAL_INFO.alias,
+  PERSONAL_INFO.title,
+  "Portfolio",
+  "Software Engineer",
+  "Full Stack Developer",
+  ...SKILLS.flatMap((s) => s.items),
+  ...CERTIFICATIONS.map((c) => c.title),
+];
+
 export const metadata: Metadata = {
-  title: "Zeon | Portfolio",
-  description: "Software engineer portfolio",
+  title: {
+    default: seoTitle,
+    template: `%s | ${PERSONAL_INFO.name}`,
+  },
+  description: seoDescription,
+  keywords: seoKeywords,
+  authors: [{ name: PERSONAL_INFO.name, url: PERSONAL_INFO.github }],
+  creator: PERSONAL_INFO.name,
+  applicationName: `${PERSONAL_INFO.name} - Portfolio`,
+  openGraph: {
+    type: "website",
+    title: seoTitle,
+    description: seoDescription,
+    siteName: `${PERSONAL_INFO.name} - Portfolio`,
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: seoTitle,
+    description: seoDescription,
+    creator: PERSONAL_INFO.alias,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
