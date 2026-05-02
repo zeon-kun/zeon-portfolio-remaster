@@ -138,6 +138,26 @@ export type Project = {
 
 export const PROJECTS: Project[] = [
   {
+    id: "extract-design",
+    title: "extract-design",
+    year: 2026,
+    tagline: "Claude Code plugin — reverse-engineer any brand's visual language",
+    description:
+      "A Claude Code plugin that extracts a complete design system from any URL, screenshot, or Figma file. Outputs three files: machine-readable tokens.json, a branded preview.html, and a brand identity README. Every token carries a confidence flag — confirmed, inferred-likely, or inferred — so output is always auditable.",
+    tech: ["Claude Code", "Plugin API", "JSON", "HTML", "Python"],
+    links: [{ label: "GitHub", href: "https://github.com/zeon-kun/extract-design" }],
+  },
+  {
+    id: "axenflow",
+    title: "AxenFlow",
+    year: 2026,
+    tagline: "Production-grade headless CMS built from scratch",
+    description:
+      "A headless content management system built for the modern web. Features multi-category content organization, user authentication, and a clean publishing workflow. Built as a production system — not a toy.",
+    tech: ["CMS", "Headless", "Web"],
+    links: [{ label: "Live", href: "https://flow.axen.software" }],
+  },
+  {
     id: "artchain",
     title: "ArtChain",
     year: 2025,
