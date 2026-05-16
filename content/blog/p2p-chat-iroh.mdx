@@ -1,0 +1,101 @@
+---
+title: "P2P Browser Chat on iroh — Architecture and Lessons"
+date: "2026-05-16"
+description: "A peer-to-peer browser chat built on iroh and iroh-gossip, with a self-hosted QUIC relay and a real-time network trace panel. Write-up of the architecture and three things that went wrong."
+tags: ["engineering"]
+banner: "/blog/p2p-chat-iroh-banner.svg"
+---
+
+## Overview
+
+[p2p-chat-iroh](https://github.com/zeon-kun/p2p-chat-iroh) is a browser-based peer-to-peer chat built on [iroh](https://iroh.computer/). Two browsers establish a direct QUIC connection — no central message broker. The relay at `relay.jeong.cloud` is only used for NAT traversal fallback; once peers find each other, all traffic is peer-to-peer.
+
+Stack: Rust backend ([iroh](https://iroh.computer/) + [iroh-gossip](https://github.com/n0-computer/iroh-gossip)), Astro + React frontend, WebSocket bridge between the two, Playwright simulation harness.
+
+---
+
+## How It Works
+
+Each peer runs a Rust process with three layers:
+
+**`iroh::Endpoint`** — the QUIC transport layer. On startup, the peer generates an ed25519 keypair; the public key becomes its `EndpointId`. The endpoint attempts a direct QUIC hole-punch first. If NAT blocks it, traffic falls back through `relay.jeong.cloud:8843`.
+
+**`iroh-gossip`** — a pub/sub overlay on top of QUIC. Each chat room maps to a `TopicId` derived as `blake3(room_name)`. Messages broadcast on a topic reach all current subscribers. No broker, no central topic registry.
+
+**`ws_bridge`** — a WebSocket server that bridges the browser to the Rust backend over loopback. On connect, it replays sorted message history (capped at 500 entries), sends a `HistoryComplete` sentinel, then fans out live messages and network events in a `select!` loop.
+
+```
+Browser ──WS──► ws_bridge ──mpsc──► ChatHub ──channel──► run_gossip ──QUIC──► peer
+```
+
+### Discovery: tickets, not DNS
+
+When a host opens a room, the backend serialises `{ topic: TopicId, peers: [EndpointAddr] }` with [postcard](https://github.com/jamesmunns/postcard), base32-encodes it, and sends it to the UI as a `RoomReady` event. The joiner pastes the ticket string; the backend deserialises it, loads the host's addresses into a `MemoryLookup`, and calls `gossip.subscribe(topic, bootstrap_peers)`. No DNS, no phone-home, no registry required for the gossip layer.
+
+### Wire protocol
+
+All gossip messages are `GossipFrame` variants serialised as tagged JSON:
+
+- `GossipFrame::Chat` — carries `from`, `body`, `ts` (unix ms), and a random 16-byte `nonce`
+- `GossipFrame::RoomClosed` — sent by the host on leave
+
+The nonce is stored in a per-receiver `HashSet<[u8;16]>` for deduplication. Gossip may re-deliver frames, especially over the relay path.
+
+### Network trace panel
+
+The UI exposes a live trace panel fed by `NetworkEvent` broadcasts from the backend: peer discovery, path selection (direct vs. relayed), STUN RTTs, candidate gathering. Observable transport state, not black-box latency.
+
+### Simulation harness
+
+A Playwright fixture in `simulation/` spawns two `cargo run --bin chat -- serve` processes, navigates Chromium to a side-by-side simulation page, and drives four scenarios: Basic Chat, Ping-Pong (8 alternating messages at 300ms), Broadcast Burst (5 rapid messages, dedup under rate), and Cross-Talk (concurrent sends from both peers). Each scenario verifies delivery, ordering, and deduplication end-to-end against real backends.
+
+---
+
+## Results
+
+- 20–60ms roundtrip on direct connections from Jakarta
+- Clean relay fallback when NAT blocks the direct path
+- Per-message dedup on a 16-byte nonce handles gossip re-delivery
+- History replay for late-joining browser tabs, deterministic ordering by `(ts, nonce)`
+
+---
+
+## What I Learned
+
+### glibc vs. musl: read the error one layer down
+
+The Docker image for my relay refused to start:
+
+```
+exec: /app/iroh-relay: no such file or directory
+```
+
+The binary was in the image. The file existed. The error was from the dynamic linker — a glibc-linked binary running in an Alpine (musl) container. `ldd` inside the container made it obvious in seconds. The fix was switching from Alpine to a Debian slim base.
+
+The pattern: when something errors at a layer I don't own, drop down a layer before diagnosing. `ldd`, `strace`, `file` exist for this. I should reach for them earlier rather than searching upward through config I already understand.
+
+### Registering a custom relay is not the same as using it
+
+I configured `relay.jeong.cloud` as the relay, but traffic kept going through n0's Singapore relay. Turns out `insert_relay` adds to the map — it doesn't remove the defaults. iroh measured RTT to all candidates and picked Singapore because it was actually faster from Jakarta.
+
+The fix was disabling defaults and inserting mine as the only option:
+
+```rust
+let relay_map = RelayMap::from_nodes([RelayNode {
+    url: "https://relay.jeong.cloud".parse()?,
+    ..Default::default()
+}])?;
+
+let endpoint = Endpoint::builder()
+    .relay_mode(RelayMode::Custom(relay_map))
+    .bind()
+    .await?;
+```
+
+Sensible defaults can quietly compete with whatever you're building on top of them. If the custom thing needs to be used, actively displace the defaults rather than registering alongside them.
+
+### When the type checker and a blog post disagree, trust the type checker
+
+iroh crossed a major release while I was building. `NodeId` became `EndpointId`. `NodeAddr` became `EndpointAddr`. Tickets moved into `iroh-base`. Most of the example code I was referencing didn't compile against what I had installed.
+
+I burned an hour trying to reconcile old snippets before I closed the browser tabs and let rust-analyzer guide me from the actual installed types. For any crate moving fast, the installed types are the ground truth. Compiler errors are documentation.
