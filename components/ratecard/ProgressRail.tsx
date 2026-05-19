@@ -23,20 +23,34 @@ export function ProgressRail({ total, current, lang }: ProgressRailProps) {
         {pasteLabel}
       </div>
 
-      {/* Interview step dots */}
-      <div className="flex flex-col gap-1.5">
-        {Array.from({ length: total }).map((_, i) => (
-          <div
-            key={i}
-            className={`w-1 h-1 rounded-full transition-colors duration-200 mx-auto ${
-              i < current
-                ? "bg-accent-primary/60"
-                : i === current
-                  ? "bg-accent-primary"
-                  : "bg-foreground/15"
-            }`}
-          />
-        ))}
+      {/* Interview step markers — connected rail */}
+      <div className="relative flex flex-col items-center gap-2.5 py-1">
+        <div
+          aria-hidden="true"
+          className="absolute top-1 bottom-1 w-px bg-foreground/10"
+        />
+        {Array.from({ length: total }).map((_, i) => {
+          const isCurrent = i === current;
+          const isDone = i < current;
+          return (
+            <div key={i} className="relative flex items-center">
+              <div
+                className={`w-2 h-2 transition-colors duration-200 ${
+                  isDone
+                    ? "bg-accent-primary"
+                    : isCurrent
+                      ? "bg-background border border-accent-primary"
+                      : "bg-foreground/15"
+                }`}
+              />
+              {isCurrent && (
+                <span className="absolute left-4 text-[10px] font-mono tabular-nums text-accent-primary">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {/* Result bookend */}

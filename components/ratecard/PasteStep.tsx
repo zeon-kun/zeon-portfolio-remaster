@@ -18,8 +18,14 @@ export function PasteStep({ initialText, onContinue, lang }: PasteStepProps) {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="border border-foreground/10 bg-background/40 backdrop-blur-sm p-6 flex flex-col gap-4">
-        <div className="flex items-start justify-between gap-4">
+      <div className="relative border border-foreground/10 bg-background/40 backdrop-blur-sm p-6 flex flex-col gap-4 overflow-hidden">
+        <span
+          aria-hidden="true"
+          className="absolute -right-1 top-3 writing-vertical text-5xl font-black kanji-brutal text-foreground/[0.05] select-none pointer-events-none"
+        >
+          依頼
+        </span>
+        <div className="relative flex items-start justify-between gap-4">
           <div>
             <p className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-muted mb-1">
               {isJp ? "依頼内容" : "Project Brief"}
@@ -41,11 +47,15 @@ export function PasteStep({ initialText, onContinue, lang }: PasteStepProps) {
               ? "依頼文・募集要項・プロジェクト概要を貼り付け…"
               : "Paste the job posting, project brief, or requirements…"
           }
-          className="w-full px-3 py-2 text-sm bg-background border border-foreground/15 focus:border-accent-primary/50 focus:outline-none transition-colors resize-none font-mono text-foreground/80 placeholder:text-foreground/25"
+          className="relative w-full px-0 py-2 text-sm bg-transparent border-0 border-b border-foreground/15 focus:border-accent-primary focus:outline-none transition-colors resize-none font-mono text-foreground/80 placeholder:text-foreground/25"
         />
 
-        <div className="flex items-center justify-between">
-          <span className="text-[9px] font-mono text-muted/50 tabular-nums">
+        <div className="relative flex items-center justify-between">
+          <span
+            className={`text-[9px] font-mono tabular-nums transition-colors ${
+              text.length > MAX_LEN * 0.05 ? "text-accent-primary/70" : "text-muted/50"
+            }`}
+          >
             {text.length} / {MAX_LEN}
           </span>
           <div className="flex items-center gap-3">
