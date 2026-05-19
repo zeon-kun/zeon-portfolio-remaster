@@ -47,16 +47,16 @@ export function DimensionStep({
               key={tier.points}
               type="button"
               onClick={() => onChange(tier.points)}
-              className={`w-full text-left px-4 py-3 border transition-colors text-sm ${
+              className={`w-full text-left pl-3 pr-4 py-3 border border-l-2 transition-colors text-sm ${
                 isSelected
-                  ? "border-accent-primary/50 bg-accent-primary/5 text-foreground"
-                  : "border-foreground/10 bg-background/40 text-foreground/70 hover:border-foreground/25 hover:text-foreground"
+                  ? "border-foreground/15 border-l-accent-primary bg-accent-primary/5 text-foreground"
+                  : "border-foreground/10 border-l-transparent bg-background/40 text-foreground/70 hover:border-foreground/25 hover:text-foreground"
               }`}
             >
               <div className="flex items-center gap-3">
                 <span
-                  className={`text-[9px] font-mono tabular-nums flex-shrink-0 ${
-                    isSelected ? "text-accent-primary" : "text-foreground/25"
+                  className={`text-lg font-black font-mono tabular-nums flex-shrink-0 leading-none ${
+                    isSelected ? "text-accent-primary" : "text-foreground/20"
                   }`}
                 >
                   {String(tier.points).padStart(2, "0")}
