@@ -6,6 +6,7 @@ import { MouseTracker } from "@/components/hero/MouseTracker";
 import { BlueprintElements } from "@/components/geometric/GlobeBlueprint";
 import { Navbar } from "@/components/nav/Navbar";
 import { AudioPlayer } from "@/components/audio/AudioPlayer";
+import { RatecardButton } from "@/components/layout/RatecardButton";
 import { globeState, useGlobePhase } from "@/lib/globe-state";
 import { useTransitionPhase } from "@/lib/transition";
 
@@ -25,6 +26,7 @@ export function PageOverlays({ children }: { children: React.ReactNode }) {
       <BlueprintElements />
       <Navbar mode="routes" loaderVisible={isHidden} />
       <AudioPlayer loaderVisible={isHidden} />
+      <RatecardButton loaderVisible={isHidden} />
 
       {/* Content wrapper — mirrors SlideContainer's #main opacity gate */}
       <div
