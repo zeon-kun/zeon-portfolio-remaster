@@ -52,7 +52,7 @@ Instead of standard scroll-based sections, the portfolio uses a robust slide sys
 - **Mouse:** Wheel interaction with a "dwell-at-boundary" pattern to prevent accidental rapid-fire slides.
 - **Touch:** Swipe gestures for mobile parity.
 
-The globe smoothly interpolates (lerps) between positions for each slide—large and centered for the **Hero**, small and top-right for **About**, and bottom-left for **Experience**.
+The globe smoothly interpolates (lerps) between positions for each slide — large and centered for the **Hero** (67% x, 50% y, 32% radius), small and top-right for **About** (88%, 18%, 14%), bottom-left for **Experience** (15%, 82%, 16%), and pinned to the right half for **Projects**, where it becomes a planetarium: each project orbits the sphere as a clickable planet.
 
 ---
 
@@ -85,5 +85,25 @@ A persistent architectural grid overlays every slide—vertical lines at 8%, 25%
 - **Framework:** Next.js 16 (App Router)
 - **Animation:** GSAP 3.14
 - **Styling:** Tailwind CSS 4
-- **Typography:** Noto Sans JP, Geist Mono, Outfit
+- **Typography:** Noto Sans JP (kanji + body), Geist (editorial headings), Geist Mono (labels)
 - **State:** React 19 Server Components
+
+---
+
+## Update — August 2026
+
+Six months on, the slide deck is no longer the whole site. It's the front door to a set of standalone routes, all sharing the same grid, palette, and page-transition loader:
+
+| Route | What it is |
+| :---- | :--------- |
+| `/blog` | This. File-system MDX, fully static at build time |
+| `/changelog` | Git log parsed at build time, grouped by month |
+| `/market` | Live crypto watchlist via a CoinGecko proxy route |
+| `/payme` | QRIS + Ethereum payment page |
+| `/ratecard` | Freelance scoping wizard |
+| `/pokedex` | 図鑑 — a PokéAPI browser, built for the fun of it |
+| `/booking` | 予約 — a themed Cal.com embed, wired to the ratecard result |
+
+Two structural things changed to make that work. `PageOverlays` became the shared layer wrapper so every route gets the grid, crosshair, globe, and audio player without duplicating them. And the navbar grew a **More** dropdown — on mobile *and* desktop — because seven routes will not fit in a bar designed for four.
+
+The globe follows along: on non-slide routes it drops into an `ambient` position (88% x, 15% y, 12% radius), decorative and out of the way.

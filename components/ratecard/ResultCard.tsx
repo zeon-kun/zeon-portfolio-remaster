@@ -1,6 +1,7 @@
 "use client";
 
-import { Mail } from "lucide-react";
+import { CalendarDays, Mail } from "lucide-react";
+import { TransitionLink } from "@/components/layout/TransitionLink";
 import { ScoreGauge } from "./ScoreGauge";
 import { DimensionBar } from "./DimensionBar";
 import { DIMENSIONS } from "@/lib/ratecard";
@@ -39,6 +40,16 @@ export function ResultCard({ score, estimate, onRestart, lang }: ResultCardProps
     : `Project inquiry — complexity score ${score.score100}`;
 
   const mailtoHref = `mailto:${PERSONAL_INFO.email}?subject=${encodeURIComponent(mailtoSubject)}`;
+
+  // Carry the estimate into the booking page so the call starts with context
+  // instead of re-deriving scope from scratch.
+  const bookingHref =
+    "/booking?" +
+    new URLSearchParams({
+      score: String(score.score100),
+      tier: score.tierLabel.en,
+      fee: `${formatIDR(estimate.idrFee.low)} – ${formatIDR(estimate.idrFee.high)}`,
+    }).toString();
 
   return (
     <div className="flex flex-col gap-10">
@@ -164,12 +175,19 @@ export function ResultCard({ score, estimate, onRestart, lang }: ResultCardProps
         </p>
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-          <a
-            href={mailtoHref}
+          <TransitionLink
+            href={bookingHref}
             className="inline-flex items-center gap-2 bg-accent-primary text-background text-[10px] font-mono font-bold uppercase tracking-[0.15em] px-6 py-3 transition-opacity hover:opacity-80"
           >
+            <CalendarDays size={13} />
+            {isJp ? "打ち合わせを予約" : "Book a call"}
+          </TransitionLink>
+          <a
+            href={mailtoHref}
+            className="inline-flex items-center gap-2 border border-foreground/15 text-foreground/70 text-[10px] font-mono font-bold uppercase tracking-[0.15em] px-6 py-3 transition-colors hover:border-foreground/30 hover:text-foreground"
+          >
             <Mail size={13} />
-            {isJp ? "問い合わせる" : "Get in touch"}
+            {isJp ? "メールで" : "Or email"}
           </a>
           <button
             type="button"

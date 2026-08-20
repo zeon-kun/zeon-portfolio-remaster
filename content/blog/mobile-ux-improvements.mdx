@@ -35,11 +35,15 @@ The bottom bar now shows exactly 5 items:
 | 4 | Projects |
 | 5 | More (...) |
 
-Tapping "More" opens a popup anchored above the bottom bar with Blog, Changelog, Email, and GitHub listed vertically with proper labels. The popup closes on outside tap, re-tap, or navigation.
+Tapping "More" opens a popup anchored above the bottom bar, listing every route link vertically with proper labels, a hairline divider, then the social links. The popup closes on outside tap, re-tap, or navigation.
+
+This is the part that aged best. At the time the popup held four items — Blog, Changelog, Email, GitHub. It now holds nine, because the site grew Pay Me, Ratecard, Market, Pokédex, and a Suggestion Box. The bottom bar never had to change: it still shows the same four slide targets plus "More". Picking an overflow pattern instead of squeezing icons is what made that free.
 
 ### Implementation Detail
 
 The popup needed `z-[60]` to sit above the audio player (which shares `z-50` with the navbar). Without this, the play button would render on top of the popup — a classic stacking context issue when multiple fixed-position elements share the same z-index.
+
+The same pattern later got lifted to desktop, where the route links now live behind a **More** dropdown in the top bar instead of sitting inline.
 
 ```tsx
 <div className="absolute bottom-full mb-2 right-0 z-[60]

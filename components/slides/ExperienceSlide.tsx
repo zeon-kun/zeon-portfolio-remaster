@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useEffect } from "react";
+import Image from "next/image";
 import gsap from "gsap";
 import { prefersReducedMotion } from "@/lib/motion";
 import { WORK_EXPERIENCE, ORGANIZATIONS } from "@/lib/content";
@@ -53,15 +54,38 @@ export function ExperienceSlide({ isActive }: { isActive: boolean }) {
               <div
                 key={entry.company}
                 data-exp-entry
-                className="border-l-2 pl-6 relative"
+                className={`border-l-2 pl-6 relative ${
+                  entry.current ? "border-accent-primary/60" : "border-foreground/15"
+                }`}
               >
-                <p className="text-xs font-mono text-muted tracking-wider">{entry.period}</p>
-                <h3 className="text-lg font-bold mt-1">
-                  {entry.company}
-                </h3>
-                <p className="text-sm text-foreground/60 mt-0.5">
-                  {entry.role} — {entry.location}
-                </p>
+                <div className="flex items-start gap-3">
+                  {entry.logo && (
+                    <span className="shrink-0 mt-0.5 w-7 h-7 md:w-8 md:h-8 border border-foreground/10 bg-foreground/[0.02] flex items-center justify-center overflow-hidden">
+                      <Image
+                        src={entry.logo}
+                        alt={`${entry.company} logo`}
+                        width={32}
+                        height={32}
+                        className="w-full h-full object-contain"
+                      />
+                    </span>
+                  )}
+                  <div className="min-w-0">
+                    <p className="text-xs font-mono text-muted tracking-wider">
+                      {entry.period}
+                      {entry.current && (
+                        <span className="ml-2 text-accent-primary">// current</span>
+                      )}
+                    </p>
+                    <h3 className="text-lg font-bold mt-1">
+                      {entry.company}
+                    </h3>
+                    <p className="text-sm text-foreground/60 mt-0.5">
+                      {entry.role} — {entry.location}
+                    </p>
+                  </div>
+                </div>
+
                 <p className="text-xs text-foreground/50 mt-2 italic">{entry.description}</p>
 
                 <ul className="mt-3 space-y-2">

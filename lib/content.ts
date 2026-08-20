@@ -6,8 +6,9 @@ export const PERSONAL_INFO = {
   email: "rafif.zeon@gmail.com",
   github: "https://github.com/zeon-kun",
   linkedin: "https://linkedin.com/in/muhammad-rafif-tri-risqullah-65311421a",
+  cal: "https://cal.com/rafif-jeong",
   summary:
-    "Junior Developer with Fullstack Development experience at Huawei. Google-certified Associate Cloud Engineer with experience building full-stack applications. Proven track record in teaching complex programming concepts and delivering production-ready software solutions through systematic problem-solving and architectural thinking.",
+    "Full-stack engineer who leans backend and ships AI-native products end-to-end \u2014 from schema to LLM-augmented UX. Currently Software Engineer at Mazecare. Google-certified Associate Cloud Engineer, with a track record of taking products from idea to production and teaching complex programming concepts along the way.",
   education: {
     institution: "Institut Teknologi Sepuluh Nopember",
     location: "Surabaya, Indonesia",
@@ -20,6 +21,10 @@ export const PERSONAL_INFO = {
     ],
   },
 } as const;
+
+/** Cal.com handle — the embed takes the bare link, not the full URL. */
+export const CAL_LINK = "rafif-jeong";
+export const CAL_URL = "https://cal.com/rafif-jeong";
 
 export type SkillCategory = {
   label: string;
@@ -53,19 +58,52 @@ export type WorkEntry = {
   period: string;
   description: string;
   highlights: string[];
+  /** Path under /public, e.g. "/logos/mazecare.svg". Placeholder until the real mark is dropped in. */
+  logo?: string;
+  /** Marks the entry as the current role. */
+  current?: boolean;
 };
 
 export const WORK_EXPERIENCE: WorkEntry[] = [
   {
+    company: "Mazecare",
+    location: "Hong Kong SAR",
+    role: "Software Engineer",
+    period: "Aug 2026 — Present",
+    description: "Healthcare technology company building clinical and patient-facing software.",
+    logo: "/logos/mazecare.svg",
+    current: true,
+    highlights: [
+      "Building product features end-to-end across the stack",
+    ],
+  },
+  {
+    company: "outbound",
+    location: "Singapore",
+    role: "Software Engineer Intern",
+    period: "Mar 2026 — Jul 2026",
+    description: "Product studio shipping AI-native tooling and growth surfaces.",
+    logo: "/logos/outbound.svg",
+    highlights: [
+      "Improved developer workflow with Claude Code agent skills, DB safety hooks, and 120+ cross-linked internal docs",
+      "Built a DB-backed prompt CMS powering 9 AI workflows with no-redeploy model switching",
+      "Shipped AI content tooling (blog, keyword research, translation pipeline) cutting ~2 hrs per post",
+      "Built the Visa Chance Checker quiz driving 3K sessions in 2 months",
+    ],
+  },
+  {
     company: "Huawei",
-    location: "Jakarta Selatan, Indonesia",
-    role: "Full Stack Developer",
-    period: "Nov 2025 — Present",
+    location: "South Jakarta, Indonesia",
+    role: "Fullstack Developer",
+    period: "Nov 2025 — Jul 2026",
     description:
       "Multinational technology company providing ICT infrastructure, smart devices, and consumer electronics.",
+    logo: "/logos/huawei.svg",
     highlights: [
-      "Contributing to the full-stack development of a high-impact application for Indosat, translating client specifications into functional technical features",
-      "Collaborating within a multi-vendor environment — including Nokia and Deloitte — participating in technical syncs and requirements gathering conducted in English",
+      "Built a customer ticket tracking system for Indosat handling 300K+ records, with custom SQL optimized for reporting and aggregation across business lines",
+      "Shipped automation to production — email automation, WhatsApp notification triggers, and Selenium WebDriver screenshot capture — supporting presales and customer success workflows",
+      "Diagnosed and fixed broken legacy scripts, delivering enhancements across multiple modules to restore business-critical reporting pipelines",
+      "Collaborated within a multi-vendor environment — including Nokia and Deloitte — participating in technical syncs and requirements gathering conducted in English",
     ],
   },
   {
@@ -74,6 +112,7 @@ export const WORK_EXPERIENCE: WorkEntry[] = [
     role: "Backend Developer Intern",
     period: "Sep 2024 — Jan 2025",
     description: "Direktorat Pengembangan Teknologi dan Sistem Informasi ITS.",
+    logo: "/logos/dptsi-its.svg",
     highlights: [
       "Refactored the Webinar booking module using Laravel with a team of 2, delivered to stakeholder satisfaction in 4 months",
       "Implemented SOLID principles and Domain-Driven Design (DDD) with well-defined layers",
@@ -86,6 +125,7 @@ export const WORK_EXPERIENCE: WorkEntry[] = [
     role: "Cloud Computing Cohort",
     period: "Feb 2024 — Jul 2024",
     description: "Led by Google, Tokopedia, Gojek, & Traveloka.",
+    logo: "/logos/bangkit.svg",
     highlights: [
       "Completed over 100 hours of intensive coursework in cloud computing, networking, IT & system administration, and GCP services",
       "Developed Glucofit, a cloud-based health monitoring platform, collaborating with cross-functional teams",

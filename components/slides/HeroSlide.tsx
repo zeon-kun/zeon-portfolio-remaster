@@ -9,12 +9,12 @@ import { Cat, Code2, Coffee } from "lucide-react";
 gsap.registerPlugin(useGSAP);
 
 const EXPERIENCE = [
+  { company: "Mazecare", location: "Hong Kong SAR" },
+  { company: "outbound", location: "Singapore" },
   { company: "Huawei", location: "Jakarta, Indonesia" },
-  { company: "DPTSI ITS", location: "Surabaya, Indonesia" },
-  { company: "Bangkit Academy", location: "Indonesia" },
 ];
 
-const COMPANIES = ["Huawei", "Indosat", "Nokia", "Deloitte", "Google"];
+const COMPANIES = ["Mazecare", "outbound", "Huawei", "Indosat", "Nokia", "Deloitte", "Google"];
 
 const TYPEWRITER_PHRASES = [
   "Full Stack Developer",
