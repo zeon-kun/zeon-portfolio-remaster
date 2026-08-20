@@ -15,7 +15,7 @@ import { BlueprintElements } from "../geometric/GlobeBlueprint";
 import { GestureHint } from "./GestureHint";
 import { AudioPlayer } from "../audio/AudioPlayer";
 import { CvDownloadButton } from "../layout/CvDownloadButton";
-import { RatecardButton } from "../layout/RatecardButton";
+import { QuickActionRail } from "../layout/QuickActionRail";
 import { LandingModal } from "../layout/LandingModal";
 import { ThankYouOverlay } from "../layout/ThankYouOverlay";
 import { useGlobePhase, globeState } from "@/lib/globe-state";
@@ -330,7 +330,7 @@ export function SlideContainer() {
       <Navbar activeSlide={SLIDES[activeIndex]} onNavigate={handleNavigate} loaderVisible={isLoaderVisible} />
       <AudioPlayer loaderVisible={isLoaderVisible} />
       <CvDownloadButton loaderVisible={isLoaderVisible} onDownload={handleCvDownload} />
-      <RatecardButton loaderVisible={isLoaderVisible} />
+      <QuickActionRail loaderVisible={isLoaderVisible} />
       <LandingModal ready={!isLoaderVisible} />
       <ThankYouOverlay show={showThanks} />
       <GestureHint />
