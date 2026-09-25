@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
+  <rect width="1200" height="630" fill="#0a0a0a"/>
+  <!-- Subtle grid -->
+  <defs>
+    <pattern id="grid" patternUnits="userSpaceOnUse" width="60" height="60">
+      <path d="M 60 0 L 0 0 0 60" stroke="#ffffff" stroke-opacity="0.025" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <!-- Watermark + label -->
+  <text x="1010" y="470" font-family="serif" font-size="220" fill="#ffffff" fill-opacity="0.03" text-anchor="middle">정</text>
+  <text x="1090" y="64" font-family="monospace" font-size="12" fill="#555555" text-anchor="end" letter-spacing="3">정 / WALLET</text>
+
+  <!-- Passkey mark (fingerprint loops forming a heart) -->
+  <g transform="translate(140 150) scale(2)" stroke="#a35b42" stroke-opacity="0.85" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <g stroke-width="5">
+<path transform="translate(3.160 4.608) scale(0.25000 0.25000)" d="M35.808 0.416c5.92 0.576 9.952 1.12 14.112 3.104 8.928 4.224 15.80801 10.72 18.016 10.72 1.6 0 2.52799-1.152 4.032-2.464 7.296-6.24 15.936-11.776 26.4-11.776 2.88 0 5.888 0.032 8.736 1.056 4.832 1.728 10.23999 4.384 13.376 7.616 8.83201 8.768 14.528 18.176 14.624 32.25599 0.12799 42.01601-54.272 83.61601-65.344 83.61601-14.528-0.704-69.76-42.496-69.76-81.056 0-24.128 14.688-37.248 25.696-41.664 3.232-1.216 6.592-1.056 10.112-1.408z"/>
+<path transform="translate(6.744 8.752) scale(0.25000 0.25000)" d="M25.34406 0.224c13.18399 0.256 24.16 12.64 29.088 12.64 5.12 0 14.52799-12.864 28.48-12.864 13.34399 0 23.55201 11.84 23.55201 26.208-0.09601 32.544-38.528 65.536-48.38401 65.536-5.984 0-34.144-18.112-45.792-35.008-7.488-10.52801-12.288-20.992-12.288-30.912-0.032-15.168 12.512-25.76 25.344-25.6z"/>
+<path transform="translate(10.584 12.712) scale(0.25000 0.25000)" d="M14.496 0c10.176 0.16 19.744 10.24 24.89601 10.24 4.512 0 14.624-8.928 23.04-8.928 8.06399 0 13.37599 5.856 13.37599 13.856 0.032 21.50401-26.144 44.576-34.33599 44.576-11.61601-0.352-41.47201-24.928-41.47201-44.192 0.032-9.632 7.008-15.552 14.496-15.552z"/>
+<path transform="translate(14.832 16.928) scale(0.25000 0.25000)" d="M6.65605 0c7.456 0.064 13.60001 8.35201 15.52 8.35201 1.824 0 7.39201-7.84 13.92-7.84001 4.51199 0 7.232 3.104 7.23201 7.328 0 8.8-11.328 20.96-20.16001 20.928-10.208 0-23.2-13.408-23.168-21.664 0-4.832 3.52-7.104 6.656-7.104z"/>
+    </g>
+  </g>
+  <text x="180" y="252" font-family="monospace" font-size="9" fill="#a35b42" fill-opacity="0.7" text-anchor="middle">private key never leaves</text>
+
+  <!-- Flow: passkey → wallet → bundler → EntryPoint → smart account -->
+  <rect x="120" y="290" width="120" height="44" rx="4" fill="#1a1a1a" stroke="#a35b42" stroke-opacity="0.6" stroke-width="1"/>
+  <text x="180" y="309" font-family="monospace" font-size="10" fill="#a35b42" text-anchor="middle" fill-opacity="0.9">passkey</text>
+  <text x="180" y="325" font-family="monospace" font-size="9" fill="#555555" text-anchor="middle">WebAuthn · P-256</text>
+
+  <rect x="340" y="290" width="120" height="44" rx="4" fill="#1a1a1a" stroke="#444444" stroke-width="1"/>
+  <text x="400" y="309" font-family="monospace" font-size="10" fill="#888888" text-anchor="middle">wallet</text>
+  <text x="400" y="325" font-family="monospace" font-size="9" fill="#555555" text-anchor="middle">browser · viem</text>
+
+  <rect x="560" y="290" width="120" height="44" rx="4" fill="#1a1a1a" stroke="#444444" stroke-width="1"/>
+  <text x="620" y="309" font-family="monospace" font-size="10" fill="#888888" text-anchor="middle">alto</text>
+  <text x="620" y="325" font-family="monospace" font-size="9" fill="#555555" text-anchor="middle">bundler · :4337</text>
+
+  <rect x="780" y="290" width="120" height="44" rx="4" fill="#1a1a1a" stroke="#444444" stroke-width="1"/>
+  <text x="840" y="309" font-family="monospace" font-size="10" fill="#888888" text-anchor="middle">EntryPoint</text>
+  <text x="840" y="325" font-family="monospace" font-size="9" fill="#555555" text-anchor="middle">v0.6</text>
+
+  <rect x="1000" y="290" width="120" height="44" rx="4" fill="#1a1a1a" stroke="#7eb8a0" stroke-opacity="0.5" stroke-width="1"/>
+  <text x="1060" y="309" font-family="monospace" font-size="10" fill="#7eb8a0" text-anchor="middle">smart account</text>
+  <text x="1060" y="325" font-family="monospace" font-size="9" fill="#555555" text-anchor="middle">Coinbase v1.1</text>
+
+  <!-- sign (dashed, rust) -->
+  <line x1="240" y1="312" x2="340" y2="312" stroke="#a35b42" stroke-opacity="0.45" stroke-width="1" stroke-dasharray="6 4"/>
+  <text x="290" y="302" font-family="monospace" font-size="9" fill="#a35b42" fill-opacity="0.7" text-anchor="middle">sign</text>
+
+  <!-- UserOp path (solid, green) -->
+  <line x1="460" y1="312" x2="560" y2="312" stroke="#7eb8a0" stroke-opacity="0.45" stroke-width="1.5"/>
+  <line x1="680" y1="312" x2="780" y2="312" stroke="#7eb8a0" stroke-opacity="0.45" stroke-width="1.5"/>
+  <line x1="900" y1="312" x2="1000" y2="312" stroke="#7eb8a0" stroke-opacity="0.45" stroke-width="1.5"/>
+  <rect x="470" y="330" width="80" height="20" rx="3" fill="#0f1f1a"/>
+  <text x="510" y="344" font-family="monospace" font-size="9" fill="#7eb8a0" text-anchor="middle">UserOp</text>
+  <rect x="690" y="330" width="80" height="20" rx="3" fill="#0f1f1a"/>
+  <text x="730" y="344" font-family="monospace" font-size="9" fill="#7eb8a0" text-anchor="middle">handleOps</text>
+  <rect x="905" y="330" width="90" height="20" rx="3" fill="#0f1f1a"/>
+  <text x="950" y="344" font-family="monospace" font-size="9" fill="#7eb8a0" text-anchor="middle">validate · exec</text>
+
+  <!-- local fork note -->
+  <text x="620" y="258" font-family="monospace" font-size="9" fill="#555555" text-anchor="middle">anvil · fork of sepolia · chain 11155111</text>
+  <line x1="560" y1="268" x2="1120" y2="268" stroke="#ffffff" stroke-opacity="0.06" stroke-width="1" stroke-dasharray="3 5"/>
+
+  <!-- Code -->
+  <rect x="120" y="440" width="960" height="140" rx="4" fill="#111111" stroke="#ffffff" stroke-opacity="0.04"/>
+  <text x="144" y="472" font-family="monospace" font-size="14" fill="#555555">// a passkey owns an ERC-4337 smart account — no seed phrase, no backend</text>
+  <text x="144" y="498" font-family="monospace" font-size="14" fill="#999999">const <tspan fill="#7eb8a0">account</tspan> = await toCoinbaseSmartAccount({</text>
+  <text x="178" y="522" font-family="monospace" font-size="14" fill="#999999">owners: [<tspan fill="#a35b42">toWebAuthnAccount</tspan>({ credential })], version: "1.1",</text>
+  <text x="144" y="546" font-family="monospace" font-size="14" fill="#999999">})</text>
+</svg>

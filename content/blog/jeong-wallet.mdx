@@ -1,0 +1,133 @@
+---
+title: "jeong_wallet: Passkeys, ERC-4337 and a Local Sepolia Fork"
+date: "2026-09-26"
+description: "A wallet where a passkey owns an ERC-4337 smart account — viem only, no backend, running on a local Anvil fork with its own bundler. Architecture, a popup protocol for dApps, and four things I learned."
+tags: ["engineering", "web3"]
+banner: "/blog/jeong-wallet-banner.svg"
+---
+
+## Why
+
+Most wallet tutorials start with an SDK that hides the interesting parts. You call `connect()`, a modal appears, and keys, signing, gas and bundling all happen somewhere you can't see. I wanted to see every layer, so I set myself three rules: **viem only** (no wagmi, no Privy, no ethers), **no seed phrase**, and **nothing running on a server**.
+
+The result is [**jeong_wallet**](https://github.com/zeon-kun/jeong-wallet). A passkey (fingerprint, face or device PIN) owns an [ERC-4337](https://eips.ethereum.org/EIPS/eip-4337) smart account. Everything runs on my laptop: a Nuxt SPA, a local [Anvil](https://book.getfoundry.sh/anvil/) node forking Sepolia, and [Alto](https://github.com/pimlicolabs/alto) as the bundler.
+
+Stack: Nuxt 4 (SPA mode) + Nuxt UI, viem's account-abstraction module, Coinbase Smart Account v1.1, EntryPoint v0.6, Foundry, Alto.
+
+---
+
+## Architecture
+
+![jeong_wallet architecture: the wallet app, passkey and IndexedDB live on the device; bundler, EntryPoint and smart account live on the local chain](/blog/jeong-wallet/architecture.webp)
+
+There's no backend. Data lives in exactly three places:
+
+- **The authenticator** holds the P-256 private key. Windows Hello, a phone or a password manager signs a hash when asked. The key never reaches JavaScript.
+- **IndexedDB** holds public data only: the credential id and public key, account labels, local activity, and which dApps are connected. There is nothing secret to store.
+- **The chain** holds balances, the deployed account contract, and (after deployment) the passkey public key as the account's owner.
+
+---
+
+## How a Send Works
+
+```text
+UI ── calls[] ──► viem builds a UserOp ──► passkey signs userOpHash (WebAuthn prompt)
+                                                  │
+Alto ◄──────────── eth_sendUserOperation ─────────┘
+ │  simulate, then bundle
+ ▼
+EntryPoint.handleOps ──► account.validateUserOp (P-256 check) ──► execute(to, value, data)
+```
+
+The account is built from the passkey and an index:
+
+```ts
+const owner = toWebAuthnAccount({ credential: { id, publicKey } });
+
+const account = await toCoinbaseSmartAccount({
+  client: publicClient,
+  owners: [owner],
+  nonce: BigInt(index), // same passkey + different salt = a different account
+  version: "1.1",
+});
+
+const hash = await bundlerClient.sendUserOperation({ account, calls: [{ to, value }] });
+const receipt = await bundlerClient.waitForUserOperationReceipt({ hash });
+```
+
+A few things fall out of this design:
+
+- **Counterfactual addresses.** The address is computed from the factory, the owner and the salt before any contract exists, so it can receive ETH straight away. The first UserOp carries `initCode` and deploys the account in the same transaction. The UI says so on the review screen before you confirm.
+- **Multiple accounts, one passkey.** "Add account" just increments the salt, so there's no new backup to make.
+- **Batching.** `calls` is an array. Sending ETH and an ERC-20 in one go becomes a single `executeBatch`, confirmed with one passkey prompt.
+
+![Send screen: form on the left, a live review card on the right](/blog/jeong-wallet/send-desktop.webp)
+
+### The local chain
+
+Forking Sepolia means the EntryPoint and the Coinbase factory already exist. There are no testnet faucets: "Fund me" is `anvil_setBalance`. The browser talks to Anvil and Alto through Nuxt's dev proxy (`/rpc`, `/bundler`) because Alto doesn't send CORS headers.
+
+### Connecting other apps
+
+dApps connect through a popup instead of a browser extension. A small SDK exposes an EIP-1193-style `request()`: `eth_requestAccounts`, `personal_sign` and `eth_sendTransaction` each open `/connect`. The wallet shows the request in plain words and replies over `postMessage`. A second Nuxt app on port 3001 plays the dApp.
+
+---
+
+## Design
+
+The name comes from 정 (_jeong_), a Korean word for a deep, warm bond. The UI is a notebook you keep yourself: handwritten headings, margin notes ("tap to copy", "double-check this!"), sticky notes and a fingerprint that loops into a heart as the logo. Balances, addresses and hashes stay in Inter and JetBrains Mono, so money is never ambiguous.
+
+![Home on desktop: balance, actions and accounts on the left, recent activity on the right](/blog/jeong-wallet/home-desktop.webp)
+
+![Mobile: home in light mode, activity in dark mode, and the dApp approval popup](/blog/jeong-wallet/mobile.webp)
+
+---
+
+## Results
+
+- Passkey onboarding; export, reset and import restore the same address
+- Send and receive ETH; the first send also deploys the account
+- Multiple accounts under one passkey, with transfers between them
+- Sign and verify messages from both deployed and undeployed accounts, plus EIP-712 typed data
+- A mock ERC-20 (6 decimals) and a batch builder: several calls, one UserOp, one prompt
+- A dApp popup that connects, signs and sends; a page on a non-allowlisted origin gets no response
+
+**Next:** a backup passkey as a second owner, recovering on a new device by reading owners on-chain instead of from a backup file, then real Sepolia with a paymaster.
+
+---
+
+## What I Learned
+
+### A bundler on a fork needs blocks, and money
+
+The first UserOp went through. The second one sat in "Bundling…" forever. Alto's log showed `popped userOps from outstanding`, then nothing. Anvil mines on demand, but Alto tracks each bundle block by block. With no new block, the executor that sent the first bundle was never marked free. `anvil --block-time 1` fixed it.
+
+Then the executor ran out of funds. I had used Anvil's default test key #0, which is public and heavily used on the real Sepolia. On the fork, its balance kept snapping back to its near-zero Sepolia value right after I topped it up. Switching the bundler to throwaway keys derived from a fixed string, funded on every start, ended it.
+
+A fork inherits reality, including other people's use of "local" keys. When a tool hangs quietly, turn its log level up before touching config.
+
+### The public key is a one-time gift
+
+WebAuthn returns the passkey's public key **only at registration**. After that, the authenticator only hands back signatures. The account address is derived from that public key, so if IndexedDB is cleared the passkey still exists, but the app can no longer work out which account it owns. Passkey sync doesn't help: it syncs the private key, not my app's record of the public one.
+
+That's why onboarding pushes you to export a backup JSON (public data only). After the first transaction the key also lives on-chain as the account's owner, which is what on-chain recovery will build on.
+
+### An account that doesn't exist yet can still sign
+
+ERC-1271 signature checks call `isValidSignature` on the account contract. There's no contract before the first transaction, so for undeployed accounts the signature is wrapped per [ERC-6492](https://eips.ethereum.org/EIPS/eip-6492): the factory address and deploy calldata ride along with it. Verifiers simulate the deployment and then check. viem's `verifyMessage` handles EOAs, 1271 and 6492 in one call, so the playground can verify a signature from an account that has never touched the chain. Changing one character of the message flips it to invalid.
+
+### `postMessage` security is two strings and a window reference
+
+The popup trusts nothing it can't check:
+
+```ts
+// dApp opens /connect?origin=<its origin>. That's only a claim, so:
+window.opener.postMessage({ type: "jeong:ready" }, origin); // dropped by the browser if the claim is false
+
+window.addEventListener("message", (event) => {
+  if (event.origin !== origin || event.source !== window.opener) return; // anything else is ignored
+  // ...show the request, then answer with an explicit target origin, never "*"
+});
+```
+
+The origin also has to be on an allowlist, and each origin keeps a "connected" permission you can revoke in Settings. To test it, I served a page on port 3002 that claimed to be the playground and posted requests with `"*"`. It received nothing back.
