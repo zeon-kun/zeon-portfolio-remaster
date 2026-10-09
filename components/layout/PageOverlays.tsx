@@ -25,7 +25,7 @@ export function PageOverlays({ children }: { children: React.ReactNode }) {
       <MouseTracker />
       <BlueprintElements />
       <Navbar mode="routes" loaderVisible={isHidden} />
-      <AudioPlayer loaderVisible={isHidden} />
+      <AudioPlayer />
       <QuickActionRail loaderVisible={isHidden} />
 
       {/* Content wrapper — mirrors SlideContainer's #main opacity gate */}

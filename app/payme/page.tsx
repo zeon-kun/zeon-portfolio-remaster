@@ -5,7 +5,7 @@ import { CryptoTicker } from "@/components/market/CryptoTicker";
 // import { SphereDecoration } from "@/components/payme/SphereDecoration";
 
 export const metadata: Metadata = {
-  title: "支払い — Pay Me | Zeon",
+  title: "支払い — Pay Me | Jeong",
   description: "Payment options: QRIS (Indonesia) and Ethereum mainnet.",
 };
 
@@ -15,7 +15,7 @@ const ETH_ADDRESS = "0x821E2294f4413f88a458299914db394Ea3471C64";
 
 export default function PayMePage() {
   return (
-    <main className="min-h-screen pt-28 pb-24 md:pb-12 px-6 md:px-12 relative overflow-hidden">
+    <div className="pt-6 pb-12 px-6 md:px-12 relative overflow-hidden">
       {/* Sphere decoration — EVE/planetarium backdrop */}
       {/* <div className="absolute inset-0 pointer-events-none">
         <SphereDecoration />
@@ -94,6 +94,6 @@ export default function PayMePage() {
           Direct transfer - dm me if you already paid.
         </p>
       </div>
-    </main>
+    </div>
   );
 }

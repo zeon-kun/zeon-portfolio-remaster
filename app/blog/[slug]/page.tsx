@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!post) return { title: "Not Found" };
 
   return {
-    title: `${post.meta.title} | Zeon Blog`,
+    title: `${post.meta.title} | Jeong Blog`,
     description: post.meta.description,
   };
 }
@@ -54,7 +54,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     : "";
 
   return (
-    <main className="min-h-screen pt-28 pb-24 md:pb-12 px-6 md:px-12">
+    <div className="pt-6 pb-12 px-6 md:px-12">
       <div className="max-w-4xl mx-auto">
         {/* Back link */}
         <TransitionLink
@@ -97,13 +97,13 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         </header>
 
         {/* Content + ToC grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_200px] gap-12">
-          <article>{content}</article>
-          <aside className="hidden lg:block">
+        <div className="grid grid-cols-1 2xl:grid-cols-[minmax(0,1fr)_200px] gap-12">
+          <article className="min-w-0">{content}</article>
+          <aside className="hidden 2xl:block">
             <BlogToC entries={toc} />
           </aside>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

@@ -4,7 +4,7 @@ import { CalEmbed } from "@/components/booking/CalEmbed";
 import { PERSONAL_INFO } from "@/lib/content";
 
 export const metadata: Metadata = {
-  title: "予約 — Booking | Zeon",
+  title: "予約 — Booking | Jeong",
   description:
     "Book a call — scoping, technical review, or just a conversation. Pick a slot that works and it lands straight in the calendar.",
 };
@@ -19,7 +19,7 @@ const AGENDA = [
 
 export default function BookingPage() {
   return (
-    <main className="min-h-screen pt-28 pb-24 md:pb-12 px-6 md:px-12 relative overflow-hidden">
+    <div className="pt-6 pb-12 px-6 md:px-12 relative overflow-hidden">
       <div className="max-w-3xl mx-auto relative">
         {/* Page header */}
         <header className="mb-14 relative">
@@ -84,6 +84,6 @@ export default function BookingPage() {
           </a>
         </p>
       </div>
-    </main>
+    </div>
   );
 }

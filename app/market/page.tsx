@@ -214,7 +214,7 @@ export default function MarketPage() {
   const hasData = Object.keys(prices).length > 0;
 
   return (
-    <main className="min-h-screen pt-28 pb-24 md:pb-12 px-6 md:px-12">
+    <div className="pt-6 pb-12 px-6 md:px-12">
       <div className="max-w-5xl mx-auto">
 
         {/* ── Page header ── */}
@@ -275,7 +275,7 @@ export default function MarketPage() {
         )}
 
         {/* ── Coin grid ── */}
-        <div className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 transition-opacity duration-500 ${rateLimited && hasData ? "opacity-50" : "opacity-100"}`}>
+        <div className={`grid grid-cols-2 md:grid-cols-3 2xl:grid-cols-4 gap-3 md:gap-4 transition-opacity duration-500 ${rateLimited && hasData ? "opacity-50" : "opacity-100"}`}>
           {COIN_IDS.map((id: CoinId, idx) => (
             <CoinCard
               key={id}
@@ -295,6 +295,6 @@ export default function MarketPage() {
           Prices in USD · Data from CoinGecko · Not financial advice
         </p>
       </div>
-    </main>
+    </div>
   );
 }

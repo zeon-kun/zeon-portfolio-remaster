@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { RatecardWizard } from "@/components/ratecard/RatecardWizard";
 
 export const metadata: Metadata = {
-  title: "料金 — Ratecard | Zeon",
+  title: "料金 — Ratecard | Jeong",
   description:
     "Estimate your project complexity and get a transparent rate range. Paste your brief, walk a short interview, and get a deterministic IDR + USD fee estimate.",
 };
@@ -11,7 +11,7 @@ export const dynamic = "force-static";
 
 export default function RatecardPage() {
   return (
-    <main className="min-h-screen pt-28 pb-24 md:pb-12 px-6 md:px-12 relative overflow-hidden">
+    <div className="pt-6 pb-12 px-6 md:px-12 relative overflow-hidden">
       <div className="max-w-3xl mx-auto relative">
         <header className="mb-14 relative">
           <span
@@ -36,6 +36,6 @@ export default function RatecardPage() {
 
         <RatecardWizard />
       </div>
-    </main>
+    </div>
   );
 }

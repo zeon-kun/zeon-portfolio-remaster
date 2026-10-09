@@ -10,6 +10,7 @@
   "dependencies": {
     "@calcom/embed-react": "^1.5.3",
     "@gsap/react": "^2.1.2",
+    "@lucasmarkes/hairline": "^0.5.0",
     "@react-pdf/renderer": "^4.5.1",
     "fs": "^0.0.1-security",
     "gray-matter": "^4.0.3",
@@ -21,7 +22,8 @@
     "react-dom": "^19.2.4",
     "rehype-highlight": "^7.0.2",
     "rehype-slug": "^6.0.0",
-    "remark-gfm": "^4.0.1"
+    "remark-gfm": "^4.0.1",
+    "thinking-orbs": "^0.3.2"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.18",

@@ -1,13 +1,9 @@
 "use client";
 
-import { useCallback, useRef } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { TransitionLink } from "@/components/layout/TransitionLink";
-import { transitionState } from "@/lib/transition";
-import { prefersReducedMotion } from "@/lib/motion";
 import type { PostMeta } from "@/lib/blog";
-
-const EXIT_DURATION = 600;
 
 function formatDate(dateStr: string): string {
   const d = new Date(dateStr);
@@ -16,35 +12,14 @@ function formatDate(dateStr: string): string {
 
 export function BlogCard({ post }: { post: PostMeta }) {
   const router = useRouter();
-  const pathname = usePathname();
-  const navigatingRef = useRef(false);
 
   const handleCardClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       // If a child link (title or tag) already handled navigation, bail
-      const target = e.target as HTMLElement;
-      if (target.closest("a")) return;
-
-      const href = `/blog/${post.slug}`;
-      if (href === pathname) return;
-      if (transitionState.phase !== "idle") return;
-      if (navigatingRef.current) return;
-
-      navigatingRef.current = true;
-
-      if (prefersReducedMotion()) {
-        router.push(href);
-        return;
-      }
-
-      transitionState.targetHref = href;
-      transitionState.setPhase("exiting");
-
-      setTimeout(() => {
-        router.push(href);
-      }, EXIT_DURATION);
+      if ((e.target as HTMLElement).closest("a")) return;
+      router.push(`/blog/${post.slug}`);
     },
-    [router, pathname, post.slug]
+    [router, post.slug]
   );
 
   return (

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Noto_Sans_JP, Instrument_Serif, Outfit, Geist } from "next/font/google";
 import "./globals.css";
-import { PageLoader } from "./loader";
+import { ChatShell } from "@/components/chat/ChatShell";
+import { getChatFacts } from "@/lib/chat/facts";
 import { PERSONAL_INFO, SKILLS, CERTIFICATIONS } from "@/lib/content";
 
 const notoSansJP = Noto_Sans_JP({
@@ -76,14 +77,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${notoSansJP.variable} ${geistMono.variable} ${headingFont.variable} antialiased`}>
-        <PageLoader />
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-100 focus:bg-foreground focus:text-background focus:px-4 focus:py-2 focus:text-sm"
         >
           Skip to content
         </a>
-        {children}
+        <ChatShell facts={getChatFacts()}>{children}</ChatShell>
       </body>
     </html>
   );

@@ -328,7 +328,7 @@ export function SlideContainer() {
       <MouseTracker />
       <BlueprintElements />
       <Navbar activeSlide={SLIDES[activeIndex]} onNavigate={handleNavigate} loaderVisible={isLoaderVisible} />
-      <AudioPlayer loaderVisible={isLoaderVisible} />
+      <AudioPlayer />
       <CvDownloadButton loaderVisible={isLoaderVisible} onDownload={handleCvDownload} />
       <QuickActionRail loaderVisible={isLoaderVisible} />
       <LandingModal ready={!isLoaderVisible} />

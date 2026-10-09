@@ -11,6 +11,14 @@
   --border: rgba(0, 0, 0, 0.08);
   --crosshair: #999999;
 
+  /* Hairline figures: plates are opaque, so the plate must match the page background */
+  --hairline-plate: #f5f0eb;
+  --hairline-hi: #a35b42;
+  --hairline-edge: #3d3630;
+  --hairline-mid: #8a8278;
+  --hairline-lo: #cfc6bb;
+  --hairline-stroke: 0.9;
+
   /* HLJS - Aligned with your actual design tokens */
   --hljs-bg: #ebe5de;           /* Slightly darker than page bg for contrast */
   --hljs-color: #1a1a1a;        /* Match foreground */
@@ -203,4 +211,190 @@ code:not(.hljs) {
 .hljs-strong {
   font-weight: 700;
   color: var(--hljs-keyword);
+}
+/* Horizontally scrolling toolbox — scrolls by touch/keys without showing a bar */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Motion ───────────────────────────────────────────────────────────────
+   Stronger curves than the CSS built-ins; these also back Tailwind's
+   ease-out / ease-in-out utilities. Entrances move transform + opacity only. */
+@theme {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Staggered entrance: set --i on each sibling for a 60ms step. Fill is "backwards" so the
+   finished animation releases transform and press-scale still works on the element. */
+.rise-in {
+  animation: rise-in 260ms var(--ease-out) backwards;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+
+.scale-in {
+  animation: scale-in 280ms var(--ease-out) backwards;
+}
+
+.fade-in {
+  animation: fade-in 200ms var(--ease-out) backwards;
+}
+
+/* Thinking placeholder */
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.skeleton {
+  animation: skeleton-pulse 1.1s var(--ease-in-out) infinite;
+}
+
+@keyframes thinking-dot {
+  0%,
+  70%,
+  100% {
+    opacity: 0.2;
+  }
+  35% {
+    opacity: 1;
+  }
+}
+
+.thinking-dots span {
+  animation: thinking-dot 1.1s linear infinite;
+}
+.thinking-dots span:nth-child(2) {
+  animation-delay: 150ms;
+}
+.thinking-dots span:nth-child(3) {
+  animation-delay: 300ms;
+}
+
+/* ── Panel open / close ───────────────────────────────────────────────────
+   Desktop: the page slides in from the right while the thread glides from the
+   centre into its side column, and the reverse on close. Mobile: the page
+   rises like a sheet. The thread keyframes offset the element from where it
+   used to be centred (50vw, or half the side column) so only transform moves. */
+:root {
+  --side-w: 420px; /* keep in sync with SIDE in ChatShell */
+}
+@media (min-width: 1280px) {
+  :root {
+    --side-w: 480px;
+  }
+}
+
+@theme {
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+@keyframes panel-out {
+  to {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+/* The section spans the viewport with the side column as left padding, so the visible page
+   is 100% minus that column wide. */
+@keyframes panel-in-x {
+  from {
+    transform: translateX(calc(100% - var(--side-w)));
+  }
+}
+@keyframes panel-out-x {
+  to {
+    transform: translateX(calc(100% - var(--side-w)));
+  }
+}
+@keyframes thread-dock {
+  from {
+    transform: translateX(calc(50vw - 50%));
+  }
+}
+@keyframes thread-undock {
+  from {
+    transform: translateX(calc(var(--side-w) / 2 - 50%));
+  }
+}
+
+.panel-enter {
+  animation: panel-in 280ms var(--ease-drawer) backwards;
+}
+/* "forwards": the page stays off-screen until the route change unmounts it. */
+.panel-leave {
+  animation: panel-out 200ms var(--ease-drawer) forwards;
+}
+.thread-undock {
+  animation: fade-in 200ms var(--ease-out) backwards;
+}
+
+@media (min-width: 1024px) {
+  .panel-enter {
+    animation: panel-in-x 380ms var(--ease-drawer) backwards;
+  }
+  .panel-leave {
+    animation: panel-out-x 260ms var(--ease-drawer) forwards;
+  }
+  .thread-dock {
+    animation: thread-dock 380ms var(--ease-drawer) backwards;
+  }
+  .thread-undock {
+    animation: thread-undock 340ms var(--ease-drawer) backwards;
+  }
+}
+
+/* Bottom sheet (Pokédex detail on narrow panels) */
+@keyframes sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+@keyframes sheet-out {
+  to {
+    transform: translateY(100%);
+  }
+}
+.sheet-enter {
+  animation: sheet-in 300ms var(--ease-drawer) backwards;
+}
+.sheet-leave {
+  animation: sheet-out 220ms var(--ease-drawer) forwards;
+}
+.scrim-leave {
+  animation: fade-in 220ms var(--ease-out) reverse forwards;
 }
