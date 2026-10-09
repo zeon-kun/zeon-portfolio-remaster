@@ -21,4 +21,5 @@ python3 -m http.server 8766        # from the repo root, after `bun install`
 node design/linkedin-banner/render.mjs design/linkedin-banner 1 2 3 4 5
 ```
 
+Prefix with `SCALE=2` or `SCALE=3` for a high-res render (`linkedin-banner-N@2x.png`).
 Append `:d` to a variant (e.g. `2:d`) to overlay the profile-photo footprints.
