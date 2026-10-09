@@ -37,6 +37,12 @@
   .card .lbl { position: absolute; left: 10px; bottom: 8px; font-family: "Geist Mono", monospace; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
   .card .num { position: absolute; right: 10px; top: 8px; font-family: "Geist Mono", monospace; font-size: 11px; color: var(--clay); }
   .corner { position: absolute; width: 10px; height: 10px; border-color: var(--clay); border-style: solid; opacity: .7; }
+  .cursor { position: absolute; width: 26px; height: 26px; transform: translate(-3px,-2px); filter: drop-shadow(0 2px 3px rgba(0,0,0,.25)); }
+  .companion { position: absolute; display: flex; align-items: center; gap: 9px; white-space: nowrap; padding: 6px 12px;
+    background: #a35b42; color: #f5f0eb; font-weight: 700; font-size: 17px; box-shadow: 0 8px 22px -10px rgba(26,26,26,.55); }
+  .companion .face { font-family: "Noto Sans JP", sans-serif; }
+  .companion .name { font-family: "Geist Mono", monospace; letter-spacing: .03em; }
+  .companion .says { font-family: "Geist Mono", monospace; font-weight: 400; font-size: 15px; opacity: .92; border-left: 1px solid rgba(245,240,235,.45); padding-left: 9px; }
   /* debug overlay for the LinkedIn profile photo */
   .safe { display: none; }
   body.debug .safe { display: block; }
@@ -85,13 +91,14 @@ const V = {
       <div class="tick" style="left:560px;top:48px"></div><div class="tick" style="left:1488px;top:348px"></div><div class="tick" style="left:96px;top:48px"></div>
       <div class="abs" style="left:620px;top:72px;width:620px">
         <div class="eyebrow">${EYEBROW}</div>
-        <div class="headline" style="font-size:48px;margin-top:22px">Full-stack engineer shipping <em>AI-native</em> products, end to end.</div>
-        <div class="sub" style="margin-top:16px">From schema to LLM-augmented UX</div>
+        <div class="headline" style="font-size:52px;margin-top:22px">man code.<br>man ship <em>AI stuff</em>.<br>man happy :D</div>
+        <div class="sub" style="margin-top:16px">full-stack, mostly backend, schema to UX</div>
         <div class="rule" style="margin:26px 0 20px"></div>
         <div class="contacts">${CONTACTS}</div>
       </div>
       ${corners(1262, 52, 262, 292)}`,
     figs: [["exploded", 1215, 20, 360, [300, 120]]],
+    companion: ["figure", 0, true],
   },
 
   // 2 — Night: dark plate, terminal + cabinet + router, text right
@@ -104,12 +111,13 @@ const V = {
       <div class="abs mono" style="left:200px;top:36px;font-size:12px;letter-spacing:.24em;color:var(--muted);opacity:.7">CODE • COFFEE • CATS</div>
       <div class="abs" style="left:900px;top:70px;width:600px">
         <div class="eyebrow">${EYEBROW}</div>
-        <div class="headline" style="font-size:46px;margin-top:22px">I build backends, glue in LLMs, and ship the <em>whole</em> product.</div>
+        <div class="headline" style="font-size:46px;margin-top:22px">man build backend.<br>man feed it <em>LLMs</em>.<br>man ship whole thing.</div>
         <div class="sub" style="margin-top:16px">TypeScript · Python · Next.js · PostgreSQL · GCP</div>
         <div class="rule" style="margin:24px 0 20px"></div>
         <div class="contacts" style="gap:20px;font-size:14px">${CONTACTS}</div>
       </div>
       <div class="abs mono" style="left:600px;top:356px;font-size:11px;letter-spacing:.2em;color:var(--muted);opacity:.7">$ ship --end-to-end</div>`,
+    companion: ["thinking", 0, true],
     figs: [["terminal", 555, 22, 340, [200, 150]], ["cabinet", 575, 200, 170, [200, 160]], ["router", 725, 200, 170, [330, 80]]],
   },
 
@@ -125,9 +133,10 @@ const V = {
         </div>`).join("")}
       <div class="abs" style="left:620px;top:206px;width:900px">
         <div class="eyebrow">${EYEBROW}</div>
-        <div class="headline" style="font-size:42px;margin-top:14px">Full-stack, backend-leaning, <em>AI-native</em>.</div>
-        <div class="contacts" style="margin-top:24px">${CONTACTS}</div>
+        <div class="headline" style="font-size:38px;margin-top:12px;line-height:1.08">man code. man drink <em>coffee</em>.<br>man play with cats.</div>
+        <div class="contacts" style="margin-top:18px">${CONTACTS}</div>
       </div>`,
+    companion: ["greet", [272, 44], false],
     figs: ["exploded", "sieve", "dish", "format", "branches"].map((f, i) => [f, 620 + i * 182, 22, 168, null]),
   },
 
@@ -140,12 +149,13 @@ const V = {
       <div class="jp abs" style="left:56px;top:-58px;font-size:260px;font-weight:900;line-height:1;opacity:.13;color:#f7efe7">路四</div>
       <div class="abs" style="left:620px;top:66px;width:640px">
         <div class="eyebrow" style="color:#f1ddd1"><span class="dot" style="background:#f7efe7"></span>Software Engineer<span class="sep">/</span>Mazecare<span class="sep">/</span>Remote</div>
-        <div class="headline" style="font-size:52px;margin-top:20px">Ships AI-native products, <span style="opacity:.62">from schema to UX.</span></div>
+        <div class="headline" style="font-size:60px;margin-top:20px">man code.<br><span style="opacity:.62">man happy :D</span></div>
         <div class="sub" style="margin-top:16px;color:#f1ddd1">Google Cloud ACE · TypeScript · Python · Next.js</div>
         <div class="rule" style="margin:24px 0 20px"></div>
         <div class="contacts" style="color:#fbf4ee">${CONTACTS.replaceAll("<span>", "<span>")}</div>
       </div>`,
     figs: [["terrain", 1200, 18, 420, [140, 150]]],
+    companion: ["ask", 0, true, true],
     after: (root) => root.querySelectorAll(".contacts svg").forEach(s => s.style.stroke = "#f7efe7"),
   },
 
@@ -166,11 +176,12 @@ const V = {
       <div class="abs mono" style="left:48px;top:66px;font-size:12px;letter-spacing:.24em;color:var(--muted)">CODE • COFFEE • CATS</div>
       <div class="abs" style="left:620px;top:58px;width:640px">
         <div class="eyebrow">${EYEBROW}</div>
-        <div class="headline" style="font-size:50px;margin-top:20px">Connecting the <em>systems</em><br>and the <em>models</em>.</div>
+        <div class="headline" style="font-size:50px;margin-top:20px">man connect <em>systems</em>.<br>man connect <em>models</em>.</div>
         <div style="display:flex;gap:8px;margin-top:20px">${["TypeScript", "Python", "Next.js", "PostgreSQL", "GCP · ACE", "Claude Code"].map(c => `<span class="chip">${c}</span>`).join("")}</div>
         <div class="contacts" style="margin-top:26px">${CONTACTS}</div>
       </div>`,
     figs: [["hub", 1210, 30, 360, [276, 172]]],
+    companion: ["sleep", 0, true],
   },
 };
 
@@ -206,6 +217,36 @@ for (const [el, pose] of mounted) {
     (document.elementFromPoint(cx, cy) || el).dispatchEvent(new PointerEvent(type, opts));
     window.dispatchEvent(new PointerEvent(type, opts));
   }
+}
+// The site's companion: a kaomoji name tag trailing the cursor (components/chat/Companion.tsx, words from locales/en.json).
+const MOODS = {
+  figure: ["(°o°)", "poke it"], thinking: ["(°ロ°)", "thinking…"], greet: ["(＾▽＾)ノ", "hi, I’m Jeong"],
+  ask: ["(＾▽＾)", "ask me"], sleep: ["(－_－) zzZ", null], external: ["(￣▽￣)ノ", "see you there"],
+};
+if (v.companion) {
+  const [mood, at, flip, inverted] = v.companion;
+  let x, y;
+  if (Array.isArray(at)) [x, y] = at;
+  else {
+    const [el, pose] = mounted[at];
+    const r = el.getBoundingClientRect();
+    x = r.left + (pose[0] / 400) * r.width; y = r.top + (pose[1] / 320) * r.height;
+  }
+  const dark = getComputedStyle(document.documentElement).getPropertyValue("--bg").trim() === "#151413";
+  const [fill, edge] = dark ? ["#f5f0eb", "#151413"] : ["#1a1a1a", "#f5f0eb"];
+  b.insertAdjacentHTML("beforeend", `<svg class="cursor" style="left:${x}px;top:${y}px" viewBox="0 0 24 24">
+    <path d="M4 2.5 L4 19.5 L8.6 15.4 L11.6 22 L14.6 20.7 L11.7 14.2 L18 14 Z" fill="${fill}" stroke="${edge}" stroke-width="1.4" stroke-linejoin="round"/></svg>`);
+  const [face, says] = MOODS[mood];
+  const tag = document.createElement("div");
+  tag.className = "companion";
+  tag.style.borderRadius = flip ? "16px 3px 16px 16px" : "3px 16px 16px 16px";
+  if (mood === "sleep") tag.style.background = "#8a8278";
+  if (inverted) { tag.style.background = "#1f1512"; }
+  tag.innerHTML = `<span class="face">${face}</span><span class="name">Jeong</span>${says ? `<span class="says">${says}</span>` : ""}`;
+  b.appendChild(tag);
+  const w = tag.offsetWidth;
+  tag.style.left = `${flip ? x - 6 - w : x + 18}px`;
+  tag.style.top = `${y + 26}px`;
 }
 await new Promise(r => setTimeout(r, 2500));
 document.body.dataset.ready = "1";
