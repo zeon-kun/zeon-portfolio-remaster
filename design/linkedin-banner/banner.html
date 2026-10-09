@@ -1,0 +1,214 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Noto+Sans+JP:wght@400;700;900&display=block" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f0eb; --fg: #1a1a1a; --muted: #6e6860; --clay: #a35b42; --line: rgba(26,26,26,.07);
+    --hairline-plate: #f5f0eb; --hairline-hi: #a35b42; --hairline-edge: #3d3630;
+    --hairline-mid: #8a8278; --hairline-lo: #cfc6bb; --hairline-stroke: 1.1;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1584px; height: 396px; overflow: hidden; }
+  body { background: var(--bg); color: var(--fg); font-family: "Geist", "Noto Sans JP", sans-serif; }
+  .b { position: relative; width: 1584px; height: 396px; overflow: hidden; background: var(--bg); }
+  .abs { position: absolute; }
+  .mono { font-family: "Geist Mono", monospace; }
+  .jp { font-family: "Noto Sans JP", sans-serif; }
+  .eyebrow { font-family: "Geist Mono", monospace; font-size: 14px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 12px; white-space: nowrap; }
+  .eyebrow .dot { width: 8px; height: 8px; background: var(--clay); border-radius: 50%; }
+  .eyebrow .sep { opacity: .35; }
+  .headline { font-weight: 600; letter-spacing: -0.025em; line-height: 1.04; }
+  .headline em { font-style: normal; color: var(--clay); }
+  .sub { font-family: "Geist Mono", monospace; font-size: 15px; color: var(--muted); letter-spacing: .02em; }
+  .contacts { display: flex; gap: 28px; align-items: center; font-family: "Geist Mono", monospace; font-size: 16px; white-space: nowrap; }
+  .contacts span { display: inline-flex; align-items: center; gap: 9px; }
+  .contacts svg { width: 18px; height: 18px; stroke: var(--clay); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+  .rule { height: 1px; background: currentColor; opacity: .14; }
+  .fig { position: absolute; }
+  .grid-v { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--line); }
+  .grid-h { position: absolute; left: 0; right: 0; height: 1px; background: var(--line); }
+  .coord { position: absolute; font-family: "Geist Mono", monospace; font-size: 10px; color: var(--muted); opacity: .55; letter-spacing: .08em; }
+  .tick { position: absolute; width: 5px; height: 5px; border-radius: 50%; background: var(--fg); opacity: .18; transform: translate(-2px,-2px); }
+  .chip { font-family: "Geist Mono", monospace; font-size: 13px; padding: 5px 10px; border: 1px solid rgba(26,26,26,.18); color: var(--fg); white-space: nowrap; }
+  .card { position: absolute; border: 1px solid rgba(26,26,26,.12); background: rgba(255,255,255,.18); }
+  .card .lbl { position: absolute; left: 10px; bottom: 8px; font-family: "Geist Mono", monospace; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .card .num { position: absolute; right: 10px; top: 8px; font-family: "Geist Mono", monospace; font-size: 11px; color: var(--clay); }
+  .corner { position: absolute; width: 10px; height: 10px; border-color: var(--clay); border-style: solid; opacity: .7; }
+  /* debug overlay for the LinkedIn profile photo */
+  .safe { display: none; }
+  body.debug .safe { display: block; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- LinkedIn profile-photo footprints, drawn only with ?debug -->
+<div class="safe abs" style="left:47px;top:178px;width:300px;height:300px;border-radius:50%;background:rgba(255,0,0,.35);outline:2px solid red"></div>
+<div class="safe abs" style="left:68px;top:150px;width:440px;height:440px;border-radius:50%;background:rgba(0,0,255,.2);outline:2px dashed blue"></div>
+
+<script type="module">
+import * as H from "/node_modules/@lucasmarkes/hairline/dist/index.js";
+
+const ICON = {
+  mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/>',
+  github: '<path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/>',
+  cal: '<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>',
+  pin: '<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>',
+};
+const ic = (k) => `<svg viewBox="0 0 24 24">${ICON[k]}</svg>`;
+const CONTACTS = `
+  <span>${ic("mail")}rafif.zeon@gmail.com</span>
+  <span>${ic("github")}github.com/zeon-kun</span>
+  <span>${ic("cal")}cal.com/rafif-jeong</span>`;
+const EYEBROW = `<span class="dot"></span>Software Engineer<span class="sep">/</span>Mazecare<span class="sep">/</span>Remote`;
+
+function grid(xs, ys, color) {
+  return xs.map(x => `<div class="grid-v" style="left:${x}px${color ? `;background:${color}` : ""}"></div>`).join("")
+       + ys.map(y => `<div class="grid-h" style="top:${y}px${color ? `;background:${color}` : ""}"></div>`).join("");
+}
+const corners = (x, y, w, h) => `
+  <div class="corner" style="left:${x}px;top:${y}px;border-width:1.5px 0 0 1.5px"></div>
+  <div class="corner" style="left:${x + w - 10}px;top:${y + h - 10}px;border-width:0 1.5px 1.5px 0"></div>`;
+
+// Each figure: [fn, x, y, width, pose?]  pose = [fx, fy] in the figure's 400x320 frame, pointer parked there
+const V = {
+  // 1 — Blueprint: text centre, exploded window + terrain on the right
+  1: {
+    html: `
+      ${grid([96, 560, 1488], [48, 348])}
+      <div class="jp abs" style="left:60px;top:-40px;font-size:250px;font-weight:900;line-height:1;opacity:.05;letter-spacing:-.04em">路四</div>
+      <div class="coord" style="left:102px;top:30px">X 0.06 / Y 0.12</div>
+      <div class="coord" style="left:1494px;top:356px">X 0.94</div>
+      <div class="tick" style="left:560px;top:48px"></div><div class="tick" style="left:1488px;top:348px"></div><div class="tick" style="left:96px;top:48px"></div>
+      <div class="abs" style="left:620px;top:72px;width:620px">
+        <div class="eyebrow">${EYEBROW}</div>
+        <div class="headline" style="font-size:48px;margin-top:22px">Full-stack engineer shipping <em>AI-native</em> products, end to end.</div>
+        <div class="sub" style="margin-top:16px">From schema to LLM-augmented UX</div>
+        <div class="rule" style="margin:26px 0 20px"></div>
+        <div class="contacts">${CONTACTS}</div>
+      </div>
+      ${corners(1262, 52, 262, 292)}`,
+    figs: [["exploded", 1215, 20, 360, [300, 120]]],
+  },
+
+  // 2 — Night: dark plate, terminal + cabinet + router, text right
+  2: {
+    vars: { "--bg": "#151413", "--fg": "#f5f0eb", "--muted": "#a39b91", "--clay": "#d0795a", "--line": "rgba(245,240,235,.06)",
+            "--hairline-plate": "#151413", "--hairline-hi": "#d0795a", "--hairline-edge": "#e9e1d8", "--hairline-mid": "#857c72", "--hairline-lo": "#3a3531" },
+    html: `
+      ${grid([96, 560, 1488], [48, 348])}
+      <div class="jp abs" style="left:40px;top:28px;font-size:100px;font-weight:900;line-height:1;opacity:.08;writing-mode:vertical-rl;letter-spacing:.05em">路四</div>
+      <div class="abs mono" style="left:200px;top:36px;font-size:12px;letter-spacing:.24em;color:var(--muted);opacity:.7">CODE • COFFEE • CATS</div>
+      <div class="abs" style="left:900px;top:70px;width:600px">
+        <div class="eyebrow">${EYEBROW}</div>
+        <div class="headline" style="font-size:46px;margin-top:22px">I build backends, glue in LLMs, and ship the <em>whole</em> product.</div>
+        <div class="sub" style="margin-top:16px">TypeScript · Python · Next.js · PostgreSQL · GCP</div>
+        <div class="rule" style="margin:24px 0 20px"></div>
+        <div class="contacts" style="gap:20px;font-size:14px">${CONTACTS}</div>
+      </div>
+      <div class="abs mono" style="left:600px;top:356px;font-size:11px;letter-spacing:.2em;color:var(--muted);opacity:.7">$ ship --end-to-end</div>`,
+    figs: [["terminal", 555, 22, 340, [200, 150]], ["cabinet", 575, 200, 170, [200, 160]], ["router", 725, 200, 170, [330, 80]]],
+  },
+
+  // 3 — Toolbox strip: the five starter-card figures from the chat shell, text beneath
+  3: {
+    html: `
+      ${grid([600, 1524], [24, 372])}
+      <div class="jp abs" style="left:44px;top:22px;font-size:112px;font-weight:900;line-height:.9;color:var(--fg)">路四</div>
+      <div class="abs" style="left:50px;top:128px;font-size:22px;letter-spacing:.5em;color:rgba(26,26,26,.55);font-weight:500">JEONG</div>
+      ${["Work", "Ratecard", "Booking", "Writing", "Changelog"].map((l, i) => `
+        <div class="card" style="left:${620 + i * 182}px;top:34px;width:168px;height:150px">
+          <span class="num">0${i + 1}</span><span class="lbl">${l}</span>
+        </div>`).join("")}
+      <div class="abs" style="left:620px;top:206px;width:900px">
+        <div class="eyebrow">${EYEBROW}</div>
+        <div class="headline" style="font-size:42px;margin-top:14px">Full-stack, backend-leaning, <em>AI-native</em>.</div>
+        <div class="contacts" style="margin-top:24px">${CONTACTS}</div>
+      </div>`,
+    figs: ["exploded", "sieve", "dish", "format", "branches"].map((f, i) => [f, 620 + i * 182, 22, 168, null]),
+  },
+
+  // 4 — Clay: terracotta field, cream type, big terrain
+  4: {
+    vars: { "--bg": "#a35b42", "--fg": "#f7efe7", "--muted": "#ecd5c8", "--clay": "#1f1512", "--line": "rgba(247,239,231,.10)",
+            "--hairline-plate": "#a35b42", "--hairline-hi": "#f7efe7", "--hairline-edge": "#2a1a14", "--hairline-mid": "#5e3426", "--hairline-lo": "#b97a63", "--hairline-stroke": 1.2 },
+    html: `
+      ${grid([96, 560], [48, 348])}
+      <div class="jp abs" style="left:56px;top:-58px;font-size:260px;font-weight:900;line-height:1;opacity:.13;color:#f7efe7">路四</div>
+      <div class="abs" style="left:620px;top:66px;width:640px">
+        <div class="eyebrow" style="color:#f1ddd1"><span class="dot" style="background:#f7efe7"></span>Software Engineer<span class="sep">/</span>Mazecare<span class="sep">/</span>Remote</div>
+        <div class="headline" style="font-size:52px;margin-top:20px">Ships AI-native products, <span style="opacity:.62">from schema to UX.</span></div>
+        <div class="sub" style="margin-top:16px;color:#f1ddd1">Google Cloud ACE · TypeScript · Python · Next.js</div>
+        <div class="rule" style="margin:24px 0 20px"></div>
+        <div class="contacts" style="color:#fbf4ee">${CONTACTS.replaceAll("<span>", "<span>")}</div>
+      </div>`,
+    figs: [["terrain", 1200, 18, 420, [140, 150]]],
+    after: (root) => root.querySelectorAll(".contacts svg").forEach(s => s.style.stroke = "#f7efe7"),
+  },
+
+  // 5 — Network: hub + relay graph with orbit rings, chips row
+  5: {
+    html: `
+      <svg class="abs" style="left:0;top:0" width="1584" height="396">
+        <g fill="none" stroke="#a35b42">
+          <circle cx="1390" cy="198" r="150" stroke-opacity=".18" stroke-dasharray="3 6"/>
+          <circle cx="1390" cy="198" r="190" stroke-opacity=".12" stroke-dasharray="2 8"/>
+        </g>
+        <circle cx="1240" cy="198" r="4" fill="#a35b42" opacity=".5"/><circle cx="1390" cy="8" r="3.5" fill="#a35b42" opacity=".4"/>
+        <g stroke="#1a1a1a" stroke-opacity=".06">${Array.from({ length: 34 }, (_, i) => `<line x1="${i * 48}" y1="0" x2="${i * 48}" y2="396"/>`).join("")}
+        ${Array.from({ length: 9 }, (_, i) => `<line x1="0" y1="${i * 48 + 6}" x2="1584" y2="${i * 48 + 6}"/>`).join("")}</g>
+      </svg>
+      <div class="abs" style="left:0;top:0;width:600px;height:396px;background:linear-gradient(90deg,var(--bg) 0%,rgba(245,240,235,.0) 100%)"></div>
+      <div class="jp abs" style="left:48px;top:38px;font-size:15px;font-weight:700;letter-spacing:.5em;color:var(--clay)">路四 ・ ジョン</div>
+      <div class="abs mono" style="left:48px;top:66px;font-size:12px;letter-spacing:.24em;color:var(--muted)">CODE • COFFEE • CATS</div>
+      <div class="abs" style="left:620px;top:58px;width:640px">
+        <div class="eyebrow">${EYEBROW}</div>
+        <div class="headline" style="font-size:50px;margin-top:20px">Connecting the <em>systems</em><br>and the <em>models</em>.</div>
+        <div style="display:flex;gap:8px;margin-top:20px">${["TypeScript", "Python", "Next.js", "PostgreSQL", "GCP · ACE", "Claude Code"].map(c => `<span class="chip">${c}</span>`).join("")}</div>
+        <div class="contacts" style="margin-top:26px">${CONTACTS}</div>
+      </div>`,
+    figs: [["hub", 1210, 30, 360, [276, 172]]],
+  },
+};
+
+const params = new URLSearchParams(location.search);
+const v = V[params.get("v") || "1"];
+if (params.has("debug")) document.body.classList.add("debug");
+for (const [k, val] of Object.entries(v.vars || {})) document.documentElement.style.setProperty(k, val);
+
+const root = document.getElementById("root");
+root.innerHTML = `<div class="b">${v.html}</div>`;
+const b = root.firstChild;
+v.after?.(b);
+
+const mounted = [];
+for (const [fn, x, y, w, pose] of v.figs) {
+  const el = document.createElement("div");
+  el.className = "fig";
+  el.style.cssText = `left:${x}px;top:${y}px;width:${w}px`;
+  b.appendChild(el);
+  H[fn](el, { theme: "light", intensity: 0.7 });
+  mounted.push([el, pose]);
+}
+
+await document.fonts.ready;
+await new Promise(r => setTimeout(r, 300));
+// Park the pointer over each posed figure so it shows its answer, not just its rest state.
+for (const [el, pose] of mounted) {
+  if (!pose) continue;
+  const r = el.getBoundingClientRect();
+  const cx = r.left + (pose[0] / 400) * r.width, cy = r.top + (pose[1] / 320) * r.height;
+  for (const type of ["pointerover", "pointerenter", "pointermove"]) {
+    const opts = { clientX: cx, clientY: cy, bubbles: true, pointerType: "mouse", pointerId: 1, isPrimary: true };
+    (document.elementFromPoint(cx, cy) || el).dispatchEvent(new PointerEvent(type, opts));
+    window.dispatchEvent(new PointerEvent(type, opts));
+  }
+}
+await new Promise(r => setTimeout(r, 2500));
+document.body.dataset.ready = "1";
+</script>
+</body>
+</html>
