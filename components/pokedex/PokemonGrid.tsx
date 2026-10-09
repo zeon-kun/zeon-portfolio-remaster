@@ -24,9 +24,9 @@ export function PokemonGrid({
   onTypeFilter,
 }: Props) {
   return (
-    <div className="flex flex-col h-full">
-      {/* Search */}
-      <div className="mb-3">
+    <div className="@container">
+      {/* Search — stays in reach under the panel header while the list scrolls */}
+      <div className="sticky top-24 z-10 bg-background pb-3 pt-2">
         <input
           type="search"
           placeholder="Search Pokémon..."
@@ -36,11 +36,8 @@ export function PokemonGrid({
         />
       </div>
 
-      {/* Type filter chips */}
-      <div
-        className="flex items-center gap-1.5 overflow-x-auto pb-2 mb-3"
-        style={{ scrollbarWidth: "none" }}
-      >
+      {/* Type filter chips — wrap, never scroll sideways */}
+      <div className="flex flex-wrap items-center gap-1.5 pb-2 mb-3">
         <button
           onClick={() => onTypeFilter(null)}
           className={`shrink-0 px-2.5 py-0.5 text-[8px] font-mono uppercase tracking-widest border transition-colors duration-150 ${
@@ -76,11 +73,8 @@ export function PokemonGrid({
         {entries.length} / 151
       </p>
 
-      {/* Scrollable grid */}
-      <div
-        className="grid grid-cols-2 gap-1.5 overflow-y-auto flex-1 max-h-[calc(100vh-22rem)] md:max-h-[calc(100vh-20rem)] pr-1"
-        style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(26,26,26,0.15) transparent" }}
-      >
+      {/* The grid is part of the page: one scrollbar, no inner scroll box */}
+      <div className="grid grid-cols-2 gap-1.5 @xs:grid-cols-3 @md:grid-cols-4 @2xl:grid-cols-5">
         {entries.map((entry) => (
           <PokemonCard
             key={entry.id}
@@ -91,7 +85,7 @@ export function PokemonGrid({
         ))}
 
         {entries.length === 0 && (
-          <div className="col-span-2 py-12 text-center">
+          <div className="col-span-full py-12 text-center">
             <p className="text-[10px] font-mono text-muted/30 uppercase tracking-widest">No results</p>
           </div>
         )}

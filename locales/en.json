@@ -1,0 +1,207 @@
+{
+  "meta": {
+    "locale": "en",
+    "name": "English"
+  },
+  "ui": {
+    "greeting": {
+      "headline": "Ask me about my work.",
+      "subline": "Pick a question below to get started."
+    },
+    "composer": {
+      "placeholder": "Pick a question, or type / to filter",
+      "placeholderShort": "Pick a question",
+      "notice": "Predefined messages only for now. Pick one from the list.",
+      "send": "Send",
+      "noMatch": "No message matches that yet.",
+      "noMatchAction": "Email me the question instead",
+      "noticeShort": "Predefined messages only for now."
+    },
+    "toolbox": {
+      "label": "Quick navigation",
+      "more": "More"
+    },
+    "thread": {
+      "you": "You",
+      "assistant": "Jeong",
+      "followUps": "Ask next",
+      "clear": "Clear",
+      "thinking": "Thinking",
+      "clearHint": "Clear the thread"
+    },
+    "panel": {
+      "open": "Open",
+      "close": "Close",
+      "label": "Page"
+    },
+    "thinking": {
+      "working": "Working",
+      "searching": "Searching",
+      "solving": "Solving",
+      "listening": "Listening",
+      "connecting": "Connecting",
+      "weaving": "Gathering projects",
+      "composing": "Writing",
+      "breathing": "Idle",
+      "shaping": "Shaping"
+    },
+    "shortcuts": {
+      "title": "Keyboard shortcuts",
+      "focusComposer": "Focus the composer",
+      "runTool": "Run a toolbox item",
+      "walkToolbox": "Move through the toolbox",
+      "jumpMessages": "Jump between messages",
+      "closePanel": "Close the panel"
+    },
+    "links": {
+      "label": "Elsewhere",
+      "github": "GitHub",
+      "linkedin": "LinkedIn",
+      "cv": "CV",
+      "cvHint": "Download CV as PDF"
+    },
+    "companion": {
+      "name": "Jeong",
+      "toggle": "Companion",
+      "says": {
+        "greet": "hi, I’m Jeong",
+        "ask": "ask me",
+        "composer": "pick one",
+        "thinking": "thinking…",
+        "external": "see you there",
+        "cv": "take it",
+        "figure": "poke it"
+      },
+      "hide": "Hide the companion"
+    },
+    "audio": {
+      "label": "Audio player",
+      "play": "Play",
+      "pause": "Pause",
+      "previous": "Restart or previous track",
+      "next": "Next track",
+      "mute": "Mute",
+      "unmute": "Unmute",
+      "volume": "Volume",
+      "seek": "Seek",
+      "expand": "Show player controls"
+    }
+  },
+  "groups": {
+    "about": "About me",
+    "experience": "Experience",
+    "work": "Work",
+    "writing": "Writing",
+    "hire": "Hiring me",
+    "extras": "Extras"
+  },
+  "messages": {
+    "who": {
+      "label": "About",
+      "prompt": "Who are you?",
+      "answer": "I'm Rafif, also known as Jeong. I'm a full-stack engineer who leans backend and ships AI-native products end to end, from schema to LLM-augmented UX. Right now I'm a Software Engineer at Mazecare, working remotely."
+    },
+    "stack": {
+      "label": "Stack",
+      "prompt": "What's your stack?",
+      "answer": "Mostly TypeScript and Python, Next.js on the front end, PostgreSQL underneath, and Google Cloud for deployment. The full list is below."
+    },
+    "certifications": {
+      "label": "Certifications",
+      "prompt": "What certifications do you have?",
+      "answer": "Three: Google's Associate Cloud Engineer (2024), English for Business Communication from The British Institute (2024), and the ITS English EFL test (2021)."
+    },
+    "education": {
+      "label": "Education",
+      "prompt": "Where did you study?",
+      "answer": "Institut Teknologi Sepuluh Nopember in Surabaya. I earned a Bachelor of Informatics Engineering there, from September 2021 to September 2025, with a 3.48 GPA. I was a teaching assistant for five courses and reached the PIMNAS 36 finals with the Alpha Academy team."
+    },
+    "experience": {
+      "label": "Experience",
+      "prompt": "Where have you worked?",
+      "answer": "{roleCount} roles so far, most recently at {currentCompany}. I have opened the timeline; pick any role below for the details."
+    },
+    "now": {
+      "label": "Now",
+      "prompt": "What are you doing right now?",
+      "answer": "I'm a Software Engineer at Mazecare, a healthcare technology company in Hong Kong building clinical and patient-facing software. I joined in August 2026 and build product features across the whole stack."
+    },
+    "role": {
+      "label": "{company}",
+      "prompt": "What did you do at {company}?",
+      "answer": "{company}, {period}. My role there: {role}. Here is what I shipped."
+    },
+    "work": {
+      "label": "Work",
+      "prompt": "What have you built?",
+      "answer": "{projectCount} projects I am happy to show, from a Claude Code plugin to a headless CMS and on-chain contracts."
+    },
+    "recentProject": {
+      "label": "Latest project",
+      "prompt": "Show me your most recent project",
+      "answer": "That's {projectTitle}. {projectDescription}"
+    },
+    "openSource": {
+      "label": "Open source",
+      "prompt": "Anything open source?",
+      "answer": "Yes. {openSourceCount} of my projects have public repositories on GitHub. They're listed below with links."
+    },
+    "writing": {
+      "label": "Blog",
+      "prompt": "What do you write about?",
+      "answer": "{postCount} posts so far. Mostly engineering write-ups of things I built, with some design and web3."
+    },
+    "latestPost": {
+      "label": "Latest post",
+      "prompt": "What's your latest post?",
+      "answer": "{postTitle}, published {postDate}. {postDescription}",
+      "answerFallback": "Nothing published yet."
+    },
+    "thisSite": {
+      "label": "This site",
+      "prompt": "How did you build this site?",
+      "answer": "Next.js, GSAP and a hand-written canvas globe, in a Japanese brutalist style. I wrote up the architecture in “Building This Portfolio”."
+    },
+    "changelog": {
+      "label": "Changelog",
+      "prompt": "What changed recently?",
+      "answer": "{commitCount} commits since launch. The latest was “{latestCommit}”.",
+      "answerFallback": "Every commit to this site, grouped by month."
+    },
+    "ratecard": {
+      "label": "Ratecard",
+      "prompt": "How much would my project cost?",
+      "answer": "It depends on scope. Paste your brief into the estimator and answer a few questions; you'll get a complexity score and a fee range in IDR and USD."
+    },
+    "booking": {
+      "label": "Book a call",
+      "prompt": "Can we book a call?",
+      "answer": "Yes. Pick a slot and it lands straight in my calendar. It can be project scoping, a technical review, or just a conversation."
+    },
+    "pay": {
+      "label": "Pay",
+      "prompt": "How do I pay you?",
+      "answer": "Two ways: QRIS if you're in Indonesia, or Ethereum mainnet. Both are direct transfers, so message me once you've sent it."
+    },
+    "cv": {
+      "label": "CV",
+      "prompt": "Can I get your CV?",
+      "answer": "Here it is. The PDF is downloading now."
+    },
+    "contact": {
+      "label": "Contact",
+      "prompt": "How do I contact you?",
+      "answer": "Email is fastest: {email}. I'm also on GitHub and LinkedIn."
+    },
+    "market": {
+      "label": "Market",
+      "prompt": "What's the market doing?",
+      "answer": "This is my personal crypto watchlist, with live prices from CoinGecko. It isn't financial advice."
+    },
+    "pokedex": {
+      "label": "Pokédex",
+      "prompt": "Show me the Pokédex",
+      "answer": "All 151 from Generation 1. It's here for fun."
+    }
+  }
+}

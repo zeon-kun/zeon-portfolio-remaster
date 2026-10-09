@@ -3,7 +3,7 @@ import { getGitLog, groupByMonth } from "@/lib/git-log";
 import { ChangelogTimeline } from "@/components/changelog/ChangelogTimeline";
 
 export const metadata: Metadata = {
-  title: "変更履歴 — Changelog | Zeon",
+  title: "変更履歴 — Changelog | Jeong",
   description: "Build history and commit log for this portfolio.",
 };
 
@@ -14,7 +14,7 @@ export default function ChangelogPage() {
   const groups = groupByMonth(commits);
 
   return (
-    <main className="min-h-screen pt-28 pb-24 md:pb-12 px-6 md:px-12">
+    <div className="pt-6 pb-12 px-6 md:px-12">
       <div className="max-w-2xl mx-auto">
         {/* Page header */}
         <header className="mb-12">
@@ -28,6 +28,6 @@ export default function ChangelogPage() {
 
         <ChangelogTimeline groups={groups} />
       </div>
-    </main>
+    </div>
   );
 }

@@ -17,7 +17,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { tag } = await params;
   return {
-    title: `#${tag} — Blog | Zeon`,
+    title: `#${tag} — Blog | Jeong`,
     description: `Articles tagged with "${tag}".`,
   };
 }
@@ -31,7 +31,7 @@ export default async function TagPage({
   const posts = getPostsByTag(tag);
 
   return (
-    <main className="min-h-screen pt-28 pb-24 md:pb-12 px-6 md:px-12">
+    <div className="pt-6 pb-12 px-6 md:px-12">
       <div className="max-w-2xl mx-auto">
         <TransitionLink
           href="/blog"
@@ -62,6 +62,6 @@ export default async function TagPage({
           </div>
         )}
       </div>
-    </main>
+    </div>
   );
 }

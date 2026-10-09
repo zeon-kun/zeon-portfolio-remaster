@@ -7,13 +7,13 @@ const listeners = new Set<() => void>();
 const STORAGE_KEY = "portfolio-lang";
 
 function getInitialLang(): Lang {
-  if (typeof window === "undefined") return "jp";
+  if (typeof window === "undefined") return "en";
   const stored = localStorage.getItem(STORAGE_KEY);
   if (stored === "en" || stored === "jp") return stored;
-  return "jp";
+  return "en";
 }
 
-let currentLang: Lang = "jp"; // hydration-safe default
+let currentLang: Lang = "en"; // hydration-safe default
 
 export const langState = {
   get lang() {
@@ -39,6 +39,6 @@ export function useLang(): Lang {
       return () => listeners.delete(cb);
     },
     () => currentLang,
-    () => "jp" as Lang, // server snapshot
+    () => "en" as Lang, // server snapshot
   );
 }

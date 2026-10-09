@@ -1,7 +1,5 @@
-import { PageOverlays } from "@/components/layout/PageOverlays";
-
-export const metadata = { title: "図鑑 — Pokédex | Zeon" };
+export const metadata = { title: "図鑑 — Pokédex | Jeong" };
 
 export default function PokedexLayout({ children }: { children: React.ReactNode }) {
-  return <PageOverlays>{children}</PageOverlays>;
+  return children;
 }
